@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:p="primefaces">
+<h:head>
+    <title>Meu veículo</title>
+</h:head>
+<h:body>
+    <h1>Meu veículo</h1>
+
+    <h:form id="form">
+        <p:messages id="mensagens"/>
+
+        <h:panelGrid columns="2">
+            <p:outputLabel for="modelo" value="Modelo:"/>
+            <p:inputText id="modelo" value="#{manterVeiculoBean.modelo}"/>
+
+            <p:outputLabel for="capacidade" value="Capacidade da bateria (kWh):"/>
+            <p:inputText id="capacidade" value="#{manterVeiculoBean.capacidadeBateria}"/>
+
+            <p:outputLabel for="potencia" value="Potência máxima (kW):"/>
+            <p:inputText id="potencia" value="#{manterVeiculoBean.potenciaMaxima}"/>
+        </h:panelGrid>
+
+        <p:commandButton id="salvar" value="Salvar" action="#{manterVeiculoBean.salvar}" update="@form"/>
+    </h:form>
+</h:body>
+</html>
