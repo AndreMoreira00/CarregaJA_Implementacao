@@ -9,6 +9,16 @@ class VeiculoServiceTest {
     private VeiculoService service = new VeiculoService();
 
     @Test
+    void modeloEmBrancoNaoPodeSerSalvo() {
+        assertThrows(IllegalArgumentException.class, () -> service.salvar("  ", 40.0, 6.6));
+    }
+
+    @Test
+    void modeloNuloNaoPodeSerSalvo() {
+        assertThrows(IllegalArgumentException.class, () -> service.salvar(null, 40.0, 6.6));
+    }
+
+    @Test
     void capacidadeZeroNaoPodeSerSalva() {
         assertThrows(IllegalArgumentException.class, () -> service.salvar("Nissan Leaf", 0.0, 6.6));
     }
