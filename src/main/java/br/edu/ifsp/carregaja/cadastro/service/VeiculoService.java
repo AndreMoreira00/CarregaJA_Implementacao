@@ -23,6 +23,9 @@ public class VeiculoService {
     }
 
     public void salvar(String modelo, Double capacidadeBateria, Double potenciaMaxima) {
+        if (modelo == null || modelo.isBlank()) {
+            throw new IllegalArgumentException("Informe o modelo do veículo.");
+        }
         if (capacidadeBateria == null || capacidadeBateria <= 0) {
             throw new IllegalArgumentException("A capacidade da bateria deve ser maior que zero.");
         }
