@@ -35,7 +35,7 @@ Spring Boot + JSF (PrimeFaces, via JoinFaces) + MySQL, em camadas
    ./mvnw spring-boot:run
    ```
 
-4. Abra <http://localhost:8080/restricted/cadastro/ManterVeiculo.xhtml> — tela do UC05 (Manter
+4. Abra <http://localhost:8080/restricted/manterveiculo/ManterVeiculo.xhtml> — tela do UC05 (Manter
    Veículo).
 
 Para usar outro endereço de banco sem mexer no `application.properties`:

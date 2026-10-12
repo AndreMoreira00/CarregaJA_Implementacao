@@ -1,11 +1,11 @@
-package br.edu.ifsp.carregaja.cadastro.controller;
+package br.edu.ifsp.carregaja.manterveiculo.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.RequestScope;
 
-import br.edu.ifsp.carregaja.cadastro.model.Veiculo;
-import br.edu.ifsp.carregaja.cadastro.service.VeiculoService;
+import br.edu.ifsp.carregaja.manterveiculo.model.Veiculo;
+import br.edu.ifsp.carregaja.manterveiculo.service.VeiculoService;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.faces.application.FacesMessage;

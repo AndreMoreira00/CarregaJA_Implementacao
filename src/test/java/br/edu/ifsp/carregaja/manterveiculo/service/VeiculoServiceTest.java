@@ -1,4 +1,4 @@
-package br.edu.ifsp.carregaja.cadastro.service;
+package br.edu.ifsp.carregaja.manterveiculo.service;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
