@@ -1,4 +1,4 @@
-package br.edu.ifsp.carregaja.cadastro.model;
+package br.edu.ifsp.carregaja.manterveiculo.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

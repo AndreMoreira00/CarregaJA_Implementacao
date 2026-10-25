@@ -1,12 +1,12 @@
-package br.edu.ifsp.carregaja.cadastro.service;
+package br.edu.ifsp.carregaja.manterveiculo.service;
 
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import br.edu.ifsp.carregaja.cadastro.dao.VeiculoDAO;
-import br.edu.ifsp.carregaja.cadastro.model.Veiculo;
+import br.edu.ifsp.carregaja.manterveiculo.dao.VeiculoDAO;
+import br.edu.ifsp.carregaja.manterveiculo.model.Veiculo;
 
 @Service
 public class VeiculoService {
