@@ -1,0 +1,52 @@
+<ui:composition template="/WEB-INF/template/LayoutPadrao.xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+	<ui:define name="corpo">
+
+		<f:event type="preRenderView" listener="#{manterVeiculoBean.inicializar}" />
+
+		<h1>Meu veículo</h1>
+
+		<h:form id="frmVeiculo">
+			<p:messages id="messages" showDetail="false" closable="true">
+				<p:autoUpdate />
+			</p:messages>
+
+			<p:panelGrid id="veiculoGrid" columns="2" layout="grid"
+				columnClasses="rotulo, campo">
+
+				<p:outputLabel value="Modelo" for="modelo" />
+				<p:inputText id="modelo" maxlength="100" required="true"
+					requiredMessage="Informe o modelo do veículo."
+					value="#{manterVeiculoBean.veiculo.modelo}" />
+
+				<p:outputLabel value="Capacidade da bateria" for="capacidade" />
+				<p:inputNumber id="capacidade" decimalSeparator="," thousandSeparator="."
+					decimalPlaces="1" symbol=" kWh" symbolPosition="s"
+					required="true" requiredMessage="Informe a capacidade da bateria."
+					validatorMessage="A capacidade da bateria deve ser maior que zero."
+					value="#{manterVeiculoBean.veiculo.capacidadeBateria}">
+					<f:validateDoubleRange minimum="0.1" />
+				</p:inputNumber>
+
+				<p:outputLabel value="Potência máxima" for="potencia" />
+				<p:inputNumber id="potencia" decimalSeparator="," thousandSeparator="."
+					decimalPlaces="1" symbol=" kW" symbolPosition="s"
+					required="true" requiredMessage="Informe a potência máxima."
+					validatorMessage="A potência máxima deve ser maior que zero."
+					value="#{manterVeiculoBean.veiculo.potenciaMaxima}">
+					<f:validateDoubleRange minimum="0.1" />
+				</p:inputNumber>
+
+			</p:panelGrid>
+
+			<p:commandButton icon="pi pi-save" id="salvarButton" value="Salvar"
+				title="Grava os dados do veículo" style="margin-top: 20px"
+				actionListener="#{manterVeiculoBean.salvar}"
+				update="veiculoGrid" process="@this veiculoGrid" />
+		</h:form>
+	</ui:define>
+</ui:composition>
