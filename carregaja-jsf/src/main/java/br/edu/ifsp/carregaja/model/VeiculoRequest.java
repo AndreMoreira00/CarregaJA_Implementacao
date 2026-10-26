@@ -1,4 +1,4 @@
-package br.edu.ifsp.carregaja.manterveiculo.model;
+package br.edu.ifsp.carregaja.model;
 
 import lombok.Getter;
 import lombok.Setter;

@@ -1,12 +1,12 @@
-package br.edu.ifsp.carregaja.manterveiculo.service;
+package br.edu.ifsp.carregaja.service;
 
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
-import br.edu.ifsp.carregaja.manterveiculo.model.Veiculo;
-import br.edu.ifsp.carregaja.manterveiculo.repository.VeiculoRepository;
-import br.edu.ifsp.carregaja.manterveiculo.view.VeiculoRequest;
+import br.edu.ifsp.carregaja.model.Veiculo;
+import br.edu.ifsp.carregaja.repository.VeiculoRepository;
+import br.edu.ifsp.carregaja.view.VeiculoRequest;
 
 @Service
 public class VeiculoService {

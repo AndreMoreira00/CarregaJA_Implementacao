@@ -1,4 +1,4 @@
-package br.edu.ifsp.carregaja.manterveiculo.control;
+package br.edu.ifsp.carregaja.control;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -22,9 +22,9 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import br.edu.ifsp.carregaja.manterveiculo.model.Veiculo;
-import br.edu.ifsp.carregaja.manterveiculo.service.VeiculoService;
-import br.edu.ifsp.carregaja.manterveiculo.view.VeiculoRequest;
+import br.edu.ifsp.carregaja.model.Veiculo;
+import br.edu.ifsp.carregaja.service.VeiculoService;
+import br.edu.ifsp.carregaja.view.VeiculoRequest;
 
 @WebMvcTest(VeiculoController.class)
 class VeiculoControllerTest {

@@ -1,4 +1,4 @@
-package br.edu.ifsp.carregaja.manterveiculo.view;
+package br.edu.ifsp.carregaja.view;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;

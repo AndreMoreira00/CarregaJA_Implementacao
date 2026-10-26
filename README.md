@@ -12,8 +12,10 @@ São dois projetos Maven, como no Modelo de Arquitetura:
 | `carregaja-api` | **Back-end.** API REST (Spring Boot 2.7 + JPA + MySQL), em `control → service → repository → model`, com os dados de entrada validados em `view` | `http://localhost:8081` |
 | `carregaja-jsf` | **Front-end.** Telas JSF (Mojarra 2.4) + PrimeFaces 12, que chamam a API pelo `VeiculoRestClient` | Tomcat 9, `http://localhost:8080/carregaja` |
 
-Os dois usam a linha `javax.*`, a que roda no Tomcat 9. Os pacotes são organizados por caso de
-uso: tudo do UC05 está em `br.edu.ifsp.carregaja.manterveiculo`.
+Os dois usam a linha `javax.*`, a que roda no Tomcat 9. Os pacotes são organizados por camada,
+como nos exercícios de LP2 (`br.edu.ifsp.carregaja.control`, `.service`, `.repository`, `.model`,
+`.view` na API; `.controller`, `.service`, `.model` nas telas). O nome do caso de uso fica na pasta
+da página: `webapp/restricted/manterveiculo/`.
 
 ## O que precisa estar instalado
 

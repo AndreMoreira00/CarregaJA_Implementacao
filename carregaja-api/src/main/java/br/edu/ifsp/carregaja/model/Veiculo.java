@@ -1,4 +1,4 @@
-package br.edu.ifsp.carregaja.manterveiculo.model;
+package br.edu.ifsp.carregaja.model;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;

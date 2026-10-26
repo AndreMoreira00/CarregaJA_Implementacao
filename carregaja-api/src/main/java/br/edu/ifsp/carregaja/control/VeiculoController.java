@@ -1,4 +1,4 @@
-package br.edu.ifsp.carregaja.manterveiculo.control;
+package br.edu.ifsp.carregaja.control;
 
 import java.net.URI;
 
@@ -14,9 +14,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import br.edu.ifsp.carregaja.manterveiculo.model.Veiculo;
-import br.edu.ifsp.carregaja.manterveiculo.service.VeiculoService;
-import br.edu.ifsp.carregaja.manterveiculo.view.VeiculoRequest;
+import br.edu.ifsp.carregaja.model.Veiculo;
+import br.edu.ifsp.carregaja.service.VeiculoService;
+import br.edu.ifsp.carregaja.view.VeiculoRequest;
 
 import lombok.extern.slf4j.Slf4j;
 

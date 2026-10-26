@@ -1,4 +1,4 @@
-package br.edu.ifsp.carregaja.manterveiculo.model;
+package br.edu.ifsp.carregaja.model;
 
 import java.io.Serializable;
 

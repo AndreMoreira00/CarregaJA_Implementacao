@@ -1,4 +1,4 @@
-package br.edu.ifsp.carregaja.manterveiculo.service;
+package br.edu.ifsp.carregaja.service;
 
 import java.io.Serializable;
 import java.net.URI;
@@ -14,8 +14,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import br.edu.ifsp.carregaja.manterveiculo.model.Veiculo;
-import br.edu.ifsp.carregaja.manterveiculo.model.VeiculoRequest;
+import br.edu.ifsp.carregaja.model.Veiculo;
+import br.edu.ifsp.carregaja.model.VeiculoRequest;
 
 @ApplicationScoped
 public class VeiculoRestClient implements Serializable {

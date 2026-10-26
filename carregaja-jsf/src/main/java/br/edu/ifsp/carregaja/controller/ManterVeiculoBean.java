@@ -1,4 +1,4 @@
-package br.edu.ifsp.carregaja.manterveiculo.controller;
+package br.edu.ifsp.carregaja.controller;
 
 import java.io.Serializable;
 import java.util.List;
@@ -9,9 +9,9 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import br.edu.ifsp.carregaja.manterveiculo.model.Veiculo;
-import br.edu.ifsp.carregaja.manterveiculo.service.VeiculoRestClient;
-import br.edu.ifsp.carregaja.manterveiculo.service.VeiculoRestClient.ApiException;
+import br.edu.ifsp.carregaja.model.Veiculo;
+import br.edu.ifsp.carregaja.service.VeiculoRestClient;
+import br.edu.ifsp.carregaja.service.VeiculoRestClient.ApiException;
 
 import lombok.Getter;
 import lombok.Setter;
