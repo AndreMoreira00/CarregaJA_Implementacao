@@ -1,4 +1,4 @@
-package br.edu.ifsp.carregaja.manterveiculo.service;
+package br.edu.ifsp.carregaja.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -13,9 +13,9 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import br.edu.ifsp.carregaja.manterveiculo.model.Veiculo;
-import br.edu.ifsp.carregaja.manterveiculo.repository.VeiculoRepository;
-import br.edu.ifsp.carregaja.manterveiculo.view.VeiculoRequest;
+import br.edu.ifsp.carregaja.model.Veiculo;
+import br.edu.ifsp.carregaja.repository.VeiculoRepository;
+import br.edu.ifsp.carregaja.view.VeiculoRequest;
 
 class VeiculoServiceTest {
 
