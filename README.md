@@ -84,6 +84,14 @@ curl -X POST http://localhost:8081/autenticacao -H "Content-Type: application/js
 | `POST` | `/usuarios/{id}/reativar` | Síndico | Devolve o acesso | 200 · 404 |
 | `DELETE` | `/usuarios/{id}` | Síndico | Remove | 204 · 404 · 409 |
 
+| `GET` | `/vagas` | Logado | Lista as vagas | 200 |
+| `GET` | `/vagas/{id}` | Logado | Busca uma vaga | 200 · 404 |
+| `POST` | `/vagas` | Síndico | Cadastra (`identificacao`, `potenciaCarregador`) | 201 com `Location` · 400 · 409 código repetido |
+| `PUT` | `/vagas/{id}` | Síndico | Altera | 200 · 400 · 404 · 409 |
+| `POST` | `/vagas/{id}/desativar` | Síndico | Deixa de aceitar sessões | 200 · 404 |
+| `POST` | `/vagas/{id}/reativar` | Síndico | Volta a aceitar sessões | 200 · 404 |
+| `DELETE` | `/vagas/{id}` | Síndico | Remove | 204 · 404 · 409 |
+
 Corpo do `POST` e do `PUT` de veículo:
 
 ```json
@@ -131,3 +139,4 @@ do fork [R1ck-dev/CarregaJA_Implementacao](https://github.com/R1ck-dev/CarregaJA
 | UC01 — Autenticar Usuário | Login por e-mail e senha, perfis Morador e Síndico, troca obrigatória da senha provisória e proteção da API por token |
 | UC05 — Manter Veículo | Cadastrar e alterar o veículo do morador (modelo, capacidade da bateria em kWh, potência máxima em kW) |
 | UC09 — Manter Moradores | Cadastrar, alterar, desativar e remover moradores, vinculados ao apartamento, com senha provisória |
+| UC07 — Manter Vagas com Carregador | Cadastrar, alterar, desativar e remover as vagas e a potência do carregador de cada uma |
