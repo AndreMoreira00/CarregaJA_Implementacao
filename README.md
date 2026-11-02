@@ -112,6 +112,9 @@ curl -X POST http://localhost:8081/autenticacao -H "Content-Type: application/js
 | `GET` | `/veiculos/{id}` | Dono ou síndico | Busca um veículo | 200 · 403 · 404 |
 | `POST` | `/veiculos` | Morador | Cadastra o próprio veículo | 201 com `Location` · 400 · 409 se já tem |
 | `PUT` | `/veiculos/{id}` | Dono | Altera | 200 · 400 · 403 · 404 |
+| `GET` | `/tarifas` | Síndico | Lista as tarifas, da mais nova à mais antiga | 200 |
+| `GET` | `/tarifas/vigente` | Logado | Tarifa que vale agora | 200 · 404 se não há nenhuma |
+| `POST` | `/tarifas` | Síndico | Cadastra (`valorKwh`), vigente a partir de agora | 201 · 400 |
 
 Corpo do `POST` e do `PUT` de veículo:
 
@@ -151,9 +154,10 @@ Nenhum deles precisa de banco.
 
 ## O que já está implementado
 
-Por enquanto, o sistema tem o UC01 e o UC05, cada um com a API e a tela. Os demais casos de uso entram depois.
+Por enquanto, o sistema tem o UC01 e o UC05, cada um com a API e a tela, e o UC08, só na API. Os demais casos de uso entram depois.
 
 | Caso de uso | Situação |
 |---|---|
 | UC01 — Autenticar Usuário | Login por e-mail e senha, perfis Morador e Síndico, troca obrigatória da senha provisória e proteção da API por token. O primeiro síndico vem da configuração, porque o cadastro de moradores ainda não entrou |
 | UC05 — Manter Veículo | Cadastrar e alterar o veículo do morador (modelo, capacidade da bateria em kWh, potência máxima em kW) |
+| UC08 — Definir Tarifa de Energia | Cadastrar a tarifa do kWh, vigente da data e hora do cadastro até a próxima, com o histórico consultável |
