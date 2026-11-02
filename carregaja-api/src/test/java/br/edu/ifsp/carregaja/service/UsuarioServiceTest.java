@@ -25,6 +25,8 @@ import br.edu.ifsp.carregaja.model.Perfil;
 import br.edu.ifsp.carregaja.model.Usuario;
 import br.edu.ifsp.carregaja.model.Veiculo;
 import br.edu.ifsp.carregaja.repository.ApartamentoRepository;
+import br.edu.ifsp.carregaja.repository.RecusaVagaRepository;
+import br.edu.ifsp.carregaja.repository.SessaoRecargaRepository;
 import br.edu.ifsp.carregaja.repository.UsuarioRepository;
 import br.edu.ifsp.carregaja.repository.VeiculoRepository;
 import br.edu.ifsp.carregaja.view.UsuarioRequest;
@@ -36,6 +38,7 @@ class UsuarioServiceTest {
   private UsuarioRepository usuarioRepository;
   private ApartamentoRepository apartamentoRepository;
   private VeiculoRepository veiculoRepository;
+  private SessaoRecargaRepository sessaoRepository;
   private UsuarioService service;
 
   @BeforeEach
@@ -47,7 +50,9 @@ class UsuarioServiceTest {
     when(apartamentoRepository.save(any(Apartamento.class))).thenAnswer(chamada -> chamada.getArgument(0));
     when(usuarioRepository.findByEmail(any())).thenReturn(Optional.empty());
     when(apartamentoRepository.findByNumero(any())).thenReturn(Optional.empty());
-    service = new UsuarioService(usuarioRepository, apartamentoRepository, veiculoRepository, ENCODER);
+    sessaoRepository = mock(SessaoRecargaRepository.class);
+    service = new UsuarioService(usuarioRepository, apartamentoRepository, veiculoRepository, sessaoRepository,
+        mock(RecusaVagaRepository.class), ENCODER);
   }
 
   private static UsuarioRequest requisicao(String apartamento, boolean sindico, String senha) {
@@ -209,6 +214,19 @@ class UsuarioServiceTest {
 
     verify(veiculoRepository).delete(veiculo);
     verify(usuarioRepository).delete(usuario);
+  }
+
+  // HU-09, teste 05
+  @Test
+  void moradorComSessoesNaoERemovido() {
+    Usuario usuario = existente(42L, Perfil.MORADOR);
+    when(sessaoRepository.existsByUsuarioId(42L)).thenReturn(true);
+
+    RegraNegocioException recusa = assertThrows(RegraNegocioException.class, () -> service.remover(42L));
+
+    assertEquals(HttpStatus.CONFLICT, recusa.getStatus());
+    assertTrue(recusa.getMessage().contains("desative"));
+    verify(usuarioRepository, never()).delete(usuario);
   }
 
   @Test

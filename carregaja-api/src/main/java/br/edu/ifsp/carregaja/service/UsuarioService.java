@@ -11,6 +11,8 @@ import br.edu.ifsp.carregaja.model.Apartamento;
 import br.edu.ifsp.carregaja.model.Perfil;
 import br.edu.ifsp.carregaja.model.Usuario;
 import br.edu.ifsp.carregaja.repository.ApartamentoRepository;
+import br.edu.ifsp.carregaja.repository.RecusaVagaRepository;
+import br.edu.ifsp.carregaja.repository.SessaoRecargaRepository;
 import br.edu.ifsp.carregaja.repository.UsuarioRepository;
 import br.edu.ifsp.carregaja.repository.VeiculoRepository;
 import br.edu.ifsp.carregaja.view.UsuarioRequest;
@@ -21,13 +23,18 @@ public class UsuarioService {
   private final UsuarioRepository usuarioRepository;
   private final ApartamentoRepository apartamentoRepository;
   private final VeiculoRepository veiculoRepository;
+  private final SessaoRecargaRepository sessaoRepository;
+  private final RecusaVagaRepository recusaRepository;
   private final PasswordEncoder passwordEncoder;
 
   public UsuarioService(UsuarioRepository usuarioRepository, ApartamentoRepository apartamentoRepository,
-      VeiculoRepository veiculoRepository, PasswordEncoder passwordEncoder) {
+      VeiculoRepository veiculoRepository, SessaoRecargaRepository sessaoRepository,
+      RecusaVagaRepository recusaRepository, PasswordEncoder passwordEncoder) {
     this.usuarioRepository = usuarioRepository;
     this.apartamentoRepository = apartamentoRepository;
     this.veiculoRepository = veiculoRepository;
+    this.sessaoRepository = sessaoRepository;
+    this.recusaRepository = recusaRepository;
     this.passwordEncoder = passwordEncoder;
   }
 
@@ -87,6 +94,11 @@ public class UsuarioService {
   public boolean remover(Long id) {
     Optional<Usuario> encontrado = usuarioRepository.findById(id);
     encontrado.ifPresent(usuario -> {
+      // HU-09, teste 05; RN-09: quem tem histórico é desativado, e não removido
+      if (sessaoRepository.existsByUsuarioId(id) || recusaRepository.existsByUsuarioId(id)) {
+        throw new RegraNegocioException(HttpStatus.CONFLICT,
+            "Este morador tem sessões registradas: desative-o em vez de remover.");
+      }
       if (usuario.isAtivo() && usuario.temPerfil(Perfil.SINDICO)) {
         exigirOutroSindicoAtivo();
       }

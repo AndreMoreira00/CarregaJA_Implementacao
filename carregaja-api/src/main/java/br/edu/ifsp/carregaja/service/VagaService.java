@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import br.edu.ifsp.carregaja.model.Vaga;
+import br.edu.ifsp.carregaja.repository.RecusaVagaRepository;
+import br.edu.ifsp.carregaja.repository.SessaoRecargaRepository;
 import br.edu.ifsp.carregaja.repository.VagaRepository;
 import br.edu.ifsp.carregaja.view.VagaRequest;
 
@@ -14,9 +16,14 @@ import br.edu.ifsp.carregaja.view.VagaRequest;
 public class VagaService {
 
   private final VagaRepository vagaRepository;
+  private final SessaoRecargaRepository sessaoRepository;
+  private final RecusaVagaRepository recusaRepository;
 
-  public VagaService(VagaRepository vagaRepository) {
+  public VagaService(VagaRepository vagaRepository, SessaoRecargaRepository sessaoRepository,
+      RecusaVagaRepository recusaRepository) {
     this.vagaRepository = vagaRepository;
+    this.sessaoRepository = sessaoRepository;
+    this.recusaRepository = recusaRepository;
   }
 
   public Iterable<Vaga> listarTodas() {
@@ -48,9 +55,16 @@ public class VagaService {
     return alterarSituacao(id, true);
   }
 
+  // HU-07, teste 05; RN-09: vaga com sessão, em andamento ou não, é desativada, e não removida
   public boolean remover(Long id) {
     Optional<Vaga> encontrada = vagaRepository.findById(id);
-    encontrada.ifPresent(vagaRepository::delete);
+    encontrada.ifPresent(vaga -> {
+      if (sessaoRepository.existsByVagaId(id) || recusaRepository.existsByVagaId(id)) {
+        throw new RegraNegocioException(HttpStatus.CONFLICT,
+            "A vaga " + vaga.getIdentificacao() + " tem sessões registradas: desative-a em vez de remover.");
+      }
+      vagaRepository.delete(vaga);
+    });
     return encontrada.isPresent();
   }
 

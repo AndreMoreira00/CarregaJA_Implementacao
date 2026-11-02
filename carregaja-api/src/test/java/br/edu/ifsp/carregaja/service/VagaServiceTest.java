@@ -17,12 +17,15 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
 import br.edu.ifsp.carregaja.model.Vaga;
+import br.edu.ifsp.carregaja.repository.RecusaVagaRepository;
+import br.edu.ifsp.carregaja.repository.SessaoRecargaRepository;
 import br.edu.ifsp.carregaja.repository.VagaRepository;
 import br.edu.ifsp.carregaja.view.VagaRequest;
 
 class VagaServiceTest {
 
   private VagaRepository vagaRepository;
+  private SessaoRecargaRepository sessaoRepository;
   private VagaService service;
 
   @BeforeEach
@@ -30,7 +33,8 @@ class VagaServiceTest {
     vagaRepository = mock(VagaRepository.class);
     when(vagaRepository.save(any(Vaga.class))).thenAnswer(chamada -> chamada.getArgument(0));
     when(vagaRepository.findByIdentificacao(any())).thenReturn(Optional.empty());
-    service = new VagaService(vagaRepository);
+    sessaoRepository = mock(SessaoRecargaRepository.class);
+    service = new VagaService(vagaRepository, sessaoRepository, mock(RecusaVagaRepository.class));
   }
 
   private static VagaRequest requisicao(String identificacao, Double potencia) {
@@ -102,6 +106,19 @@ class VagaServiceTest {
 
     assertTrue(service.remover(3L));
     verify(vagaRepository).delete(g03);
+  }
+
+  // HU-07, testes 04 e 05
+  @Test
+  void vagaComSessoesNaoERemovidaEAMensagemOfereceDesativar() {
+    Vaga g02 = existente(2L, "G-02");
+    when(sessaoRepository.existsByVagaId(2L)).thenReturn(true);
+
+    RegraNegocioException recusa = assertThrows(RegraNegocioException.class, () -> service.remover(2L));
+
+    assertEquals(HttpStatus.CONFLICT, recusa.getStatus());
+    assertTrue(recusa.getMessage().contains("desative"));
+    verify(vagaRepository, never()).delete(g02);
   }
 
   @Test

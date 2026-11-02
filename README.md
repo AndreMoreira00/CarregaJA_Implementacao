@@ -96,6 +96,9 @@ curl -X POST http://localhost:8081/autenticacao -H "Content-Type: application/js
 | `GET` | `/tarifas/vigente` | Logado | Tarifa que vale agora | 200 · 404 se não há nenhuma |
 | `POST` | `/tarifas` | Síndico | Cadastra (`valorKwh`), vigente a partir de agora | 201 · 400 |
 
+| `POST` | `/sessoes` | Morador | Inicia a recarga (`vagaId`, `nivelBateria`) e devolve a previsão | 201 · 400 · 404 · 409 vaga ocupada ou desativada, ou sessão já aberta · 422 sem veículo ou bateria cheia |
+| `GET` | `/sessoes/minha` | Morador | Sessão aberta do morador | 200 · 404 |
+
 Corpo do `POST` e do `PUT` de veículo:
 
 ```json
@@ -145,3 +148,5 @@ do fork [R1ck-dev/CarregaJA_Implementacao](https://github.com/R1ck-dev/CarregaJA
 | UC09 — Manter Moradores | Cadastrar, alterar, desativar e remover moradores, vinculados ao apartamento, com senha provisória |
 | UC07 — Manter Vagas com Carregador | Cadastrar, alterar, desativar e remover as vagas e a potência do carregador de cada uma |
 | UC08 — Definir Tarifa de Energia | Cadastrar a tarifa do kWh, vigente da data e hora do cadastro até a próxima, com o histórico consultável |
+| UC03 — Manter Sessão de Recarga (início e previsão) | Iniciar a sessão com a potência efetiva e a previsão de conclusão, com as recusas de vaga ocupada ou desativada, sessão já aberta e morador sem veículo. O encerramento entra no sprint 6 |
+| UC04 — Apurar Energia da Sessão | Regra isolada em `ApuracaoEnergiaService`, coberta por testes de unidade. Passa a ser chamada com o encerramento, no sprint 6 |
