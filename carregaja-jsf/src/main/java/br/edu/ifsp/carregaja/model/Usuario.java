@@ -1,6 +1,8 @@
 package br.edu.ifsp.carregaja.model;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -10,10 +12,13 @@ import lombok.Setter;
 @Getter
 @Setter
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Veiculo implements Serializable {
+public class Usuario implements Serializable {
   private static final long serialVersionUID = 1L;
   private Long id;
-  private String modelo;
-  private Double capacidadeBateria;
-  private Double potenciaMaxima;
+  private String nome;
+  private String email;
+  private boolean ativo;
+  private boolean trocarSenha;
+  private Apartamento apartamento;
+  private Set<String> perfis = new HashSet<>();
 }

@@ -1,10 +1,13 @@
 <ui:composition
+  xmlns:h="http://xmlns.jcp.org/jsf/html"
   xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
   xmlns:p="http://primefaces.org/ui">
 
-  <p:menubar styleClass="menubar">
-    <p:menuitem value="Início" outcome="/index.xhtml" />
-    <p:menuitem value="Meu veículo" outcome="/restricted/manterveiculo/ManterVeiculoView.xhtml" />
-  </p:menubar>
+  <h:form id="frmMenu" rendered="#{usuarioLogado.logado}">
+    <p:menubar styleClass="menubar">
+      <p:menuitem value="Início" outcome="/index.xhtml" />
+      <p:menuitem value="Sair" action="#{autenticarUsuarioBean.sair}" ajax="false" />
+    </p:menubar>
+  </h:form>
 
 </ui:composition>
