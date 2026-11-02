@@ -92,6 +92,10 @@ curl -X POST http://localhost:8081/autenticacao -H "Content-Type: application/js
 | `POST` | `/vagas/{id}/reativar` | Síndico | Volta a aceitar sessões | 200 · 404 |
 | `DELETE` | `/vagas/{id}` | Síndico | Remove | 204 · 404 · 409 |
 
+| `GET` | `/tarifas` | Síndico | Lista as tarifas, da mais nova à mais antiga | 200 |
+| `GET` | `/tarifas/vigente` | Logado | Tarifa que vale agora | 200 · 404 se não há nenhuma |
+| `POST` | `/tarifas` | Síndico | Cadastra (`valorKwh`), vigente a partir de agora | 201 · 400 |
+
 Corpo do `POST` e do `PUT` de veículo:
 
 ```json
@@ -140,3 +144,4 @@ do fork [R1ck-dev/CarregaJA_Implementacao](https://github.com/R1ck-dev/CarregaJA
 | UC05 — Manter Veículo | Cadastrar e alterar o veículo do morador (modelo, capacidade da bateria em kWh, potência máxima em kW) |
 | UC09 — Manter Moradores | Cadastrar, alterar, desativar e remover moradores, vinculados ao apartamento, com senha provisória |
 | UC07 — Manter Vagas com Carregador | Cadastrar, alterar, desativar e remover as vagas e a potência do carregador de cada uma |
+| UC08 — Definir Tarifa de Energia | Cadastrar a tarifa do kWh, vigente da data e hora do cadastro até a próxima, com o histórico consultável |
