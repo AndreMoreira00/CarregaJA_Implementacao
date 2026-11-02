@@ -112,6 +112,13 @@ curl -X POST http://localhost:8081/autenticacao -H "Content-Type: application/js
 | `GET` | `/veiculos/{id}` | Dono ou síndico | Busca um veículo | 200 · 403 · 404 |
 | `POST` | `/veiculos` | Morador | Cadastra o próprio veículo | 201 com `Location` · 400 · 409 se já tem |
 | `PUT` | `/veiculos/{id}` | Dono | Altera | 200 · 400 · 403 · 404 |
+| `GET` | `/vagas` | Logado | Lista as vagas | 200 |
+| `GET` | `/vagas/{id}` | Logado | Busca uma vaga | 200 · 404 |
+| `POST` | `/vagas` | Síndico | Cadastra (`identificacao`, `potenciaCarregador`) | 201 com `Location` · 400 · 409 código repetido |
+| `PUT` | `/vagas/{id}` | Síndico | Altera | 200 · 400 · 404 · 409 |
+| `POST` | `/vagas/{id}/desativar` | Síndico | Deixa de aceitar sessões | 200 · 404 |
+| `POST` | `/vagas/{id}/reativar` | Síndico | Volta a aceitar sessões | 200 · 404 |
+| `DELETE` | `/vagas/{id}` | Síndico | Remove | 204 · 404 · 409 |
 
 Corpo do `POST` e do `PUT` de veículo:
 
@@ -157,3 +164,4 @@ Por enquanto, o sistema tem o UC01 e o UC05, cada um com a API e a tela. Os dema
 |---|---|
 | UC01 — Autenticar Usuário | Login por e-mail e senha, perfis Morador e Síndico, troca obrigatória da senha provisória e proteção da API por token. O primeiro síndico vem da configuração, porque o cadastro de moradores ainda não entrou |
 | UC05 — Manter Veículo | Cadastrar e alterar o veículo do morador (modelo, capacidade da bateria em kWh, potência máxima em kW) |
+| UC07 — Manter Vagas com Carregador | Cadastrar, alterar, desativar e remover as vagas e a potência do carregador de cada uma |
