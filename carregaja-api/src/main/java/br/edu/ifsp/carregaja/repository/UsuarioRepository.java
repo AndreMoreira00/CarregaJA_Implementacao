@@ -12,4 +12,6 @@ public interface UsuarioRepository extends CrudRepository<Usuario, Long> {
   Optional<Usuario> findByEmail(String email);
 
   boolean existsByPerfisContaining(Perfil perfil);
+
+  long countByPerfisContainingAndAtivoTrue(Perfil perfil);
 }

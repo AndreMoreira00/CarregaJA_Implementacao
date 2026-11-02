@@ -76,6 +76,14 @@ curl -X POST http://localhost:8081/autenticacao -H "Content-Type: application/js
 | `POST` | `/veiculos` | Morador | Cadastra o próprio veículo | 201 com `Location` · 400 · 409 se já tem |
 | `PUT` | `/veiculos/{id}` | Dono | Altera | 200 · 400 · 403 · 404 |
 
+| `GET` | `/usuarios` | Síndico | Lista moradores e síndicos | 200 |
+| `GET` | `/usuarios/{id}` | Síndico | Busca um usuário | 200 · 404 |
+| `POST` | `/usuarios` | Síndico | Cadastra, com senha provisória | 201 com `Location` · 400 · 409 e-mail repetido |
+| `PUT` | `/usuarios/{id}` | Síndico | Altera; com `senhaProvisoria`, redefine a senha | 200 · 400 · 404 · 409 |
+| `POST` | `/usuarios/{id}/desativar` | Síndico | Revoga o acesso e mantém o histórico | 200 · 404 · 409 se é o único síndico |
+| `POST` | `/usuarios/{id}/reativar` | Síndico | Devolve o acesso | 200 · 404 |
+| `DELETE` | `/usuarios/{id}` | Síndico | Remove | 204 · 404 · 409 |
+
 Corpo do `POST` e do `PUT` de veículo:
 
 ```json
@@ -122,3 +130,4 @@ do fork [R1ck-dev/CarregaJA_Implementacao](https://github.com/R1ck-dev/CarregaJA
 |---|---|
 | UC01 — Autenticar Usuário | Login por e-mail e senha, perfis Morador e Síndico, troca obrigatória da senha provisória e proteção da API por token |
 | UC05 — Manter Veículo | Cadastrar e alterar o veículo do morador (modelo, capacidade da bateria em kWh, potência máxima em kW) |
+| UC09 — Manter Moradores | Cadastrar, alterar, desativar e remover moradores, vinculados ao apartamento, com senha provisória |
