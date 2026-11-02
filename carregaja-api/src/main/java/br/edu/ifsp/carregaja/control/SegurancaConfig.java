@@ -40,6 +40,7 @@ public class SegurancaConfig {
         .authorizeHttpRequests(regras -> regras
             .antMatchers(HttpMethod.POST, "/autenticacao").permitAll()
             .antMatchers(HttpMethod.PUT, "/autenticacao/senha").authenticated()
+            .antMatchers("/usuarios/**").hasRole(SINDICO)
             .antMatchers(HttpMethod.GET, "/veiculos").hasRole(SINDICO)
             .antMatchers(HttpMethod.GET, "/veiculos/meu").hasRole(MORADOR)
             .antMatchers(HttpMethod.POST, "/veiculos").hasRole(MORADOR)
