@@ -1,5 +1,9 @@
 package br.edu.ifsp.carregaja.controller;
 
+import java.io.Serializable;
+
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -14,7 +18,7 @@ import lombok.Setter;
 
 @Named
 @ViewScoped
-public class TrocarSenhaBean extends BeanBase {
+public class TrocarSenhaBean implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
@@ -42,8 +46,13 @@ public class TrocarSenhaBean extends BeanBase {
       usuarioLogado.senhaTrocada();
       return "/index.xhtml?faces-redirect=true";
     } catch (ApiException e) {
-      reclamar(e);
+      System.out.println("TrocarSenha: " + e.getMessage());
+      avisar(e.getMessage());
       return null;
     }
+  }
+
+  private void avisar(String mensagem) {
+    FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, mensagem, null));
   }
 }

@@ -1,7 +1,9 @@
 package br.edu.ifsp.carregaja.controller;
 
 import java.io.IOException;
+import java.io.Serializable;
 
+import javax.faces.application.FacesMessage;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
@@ -19,7 +21,7 @@ import lombok.Setter;
 
 @Named
 @ViewScoped
-public class AutenticarUsuarioBean extends BeanBase {
+public class AutenticarUsuarioBean implements Serializable {
 
   private static final long serialVersionUID = 1L;
   private static final String INICIO = "/index.xhtml?faces-redirect=true";
@@ -49,7 +51,9 @@ public class AutenticarUsuarioBean extends BeanBase {
       trocarIdDaSessao();
       return INICIO;
     } catch (ApiException e) {
-      reclamar(e);
+      System.out.println("AutenticarUsuario: " + e.getMessage());
+      FacesContext.getCurrentInstance().addMessage(null,
+          new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), null));
       return null;
     }
   }
@@ -59,7 +63,7 @@ public class AutenticarUsuarioBean extends BeanBase {
     return LOGIN;
   }
 
-  // Quem conhecia o id da sessão antes do login não herda o acesso
+  // Troca o id da sessão no login para evitar session fixation
   private void trocarIdDaSessao() {
     ((HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest()).changeSessionId();
   }

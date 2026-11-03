@@ -1,5 +1,8 @@
 package br.edu.ifsp.carregaja.controller;
 
+import java.io.Serializable;
+
+import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
@@ -14,7 +17,7 @@ import lombok.Setter;
 
 @Named
 @ViewScoped
-public class ManterVeiculoBean extends BeanBase {
+public class ManterVeiculoBean implements Serializable {
 
   private static final long serialVersionUID = 1L;
   @Inject
@@ -46,5 +49,18 @@ public class ManterVeiculoBean extends BeanBase {
     } catch (ApiException e) {
       reclamar(e);
     }
+  }
+
+  private void informar(String mensagem) {
+    adicionar(FacesMessage.SEVERITY_INFO, mensagem);
+  }
+
+  private void reclamar(ApiException e) {
+    System.out.println("ManterVeiculo: " + e.getMessage());
+    adicionar(FacesMessage.SEVERITY_ERROR, e.getMessage());
+  }
+
+  private void adicionar(FacesMessage.Severity severidade, String mensagem) {
+    FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(severidade, mensagem, null));
   }
 }

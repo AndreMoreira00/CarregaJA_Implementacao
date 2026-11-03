@@ -3,7 +3,6 @@ package br.edu.ifsp.carregaja.controller;
 import java.io.IOException;
 
 import javax.inject.Inject;
-import javax.servlet.DispatcherType;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -15,12 +14,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import br.edu.ifsp.carregaja.service.UsuarioLogado;
 
-/** Só orienta a navegação: quem garante as permissões é a API. */
-@WebFilter(urlPatterns = {"/restricted/*", "/index.xhtml"}, dispatcherTypes = {DispatcherType.REQUEST, DispatcherType.FORWARD})
+/** Manda para o login quem não entrou e para a troca de senha quem ainda tem senha provisória. */
+@WebFilter(urlPatterns = {"/restricted/*", "/index.xhtml"})
 public class AutenticacaoFilter implements Filter {
 
-  private static final String INICIO = "/index.xhtml";
-  private static final String PAGINAS_DO_MORADOR = "/restricted/manterveiculo/";
   private static final String LOGIN = "/autenticarusuario/AutenticarUsuarioView.xhtml";
   private static final String TROCAR_SENHA = "/restricted/autenticarusuario/TrocarSenhaView.xhtml";
 
@@ -32,39 +29,13 @@ public class AutenticacaoFilter implements Filter {
       throws IOException, ServletException {
     HttpServletRequest requisicao = (HttpServletRequest) request;
     HttpServletResponse resposta = (HttpServletResponse) response;
-    String pagina = requisicao.getServletPath();
 
-    String destino = destinoObrigatorio(pagina);
-    if (destino != null) {
-      redirecionar(requisicao, resposta, destino);
-      return;
-    }
-    // Depois de sair, o botão Voltar do navegador não mostra a página guardada
-    resposta.setHeader("Cache-Control", "no-store");
-    cadeia.doFilter(request, response);
-  }
-
-  private String destinoObrigatorio(String pagina) {
     if (!usuarioLogado.isLogado()) {
-      return LOGIN;
+      resposta.sendRedirect(requisicao.getContextPath() + LOGIN);
+    } else if (usuarioLogado.isTrocarSenha() && !requisicao.getServletPath().equals(TROCAR_SENHA)) {
+      resposta.sendRedirect(requisicao.getContextPath() + TROCAR_SENHA);
+    } else {
+      cadeia.doFilter(request, response);
     }
-    if (usuarioLogado.isTrocarSenha() && !pagina.equals(TROCAR_SENHA)) {
-      return TROCAR_SENHA;
-    }
-    return pagina.startsWith(PAGINAS_DO_MORADOR) && !usuarioLogado.isMorador() ? INICIO : null;
-  }
-
-  // Uma requisição AJAX do JSF não segue o 302: precisa da resposta que o JavaScript dele entende
-  private void redirecionar(HttpServletRequest requisicao, HttpServletResponse resposta, String destino)
-      throws IOException {
-    String url = requisicao.getContextPath() + destino;
-    if ("partial/ajax".equals(requisicao.getHeader("Faces-Request"))) {
-      resposta.setContentType("text/xml");
-      resposta.setCharacterEncoding("UTF-8");
-      resposta.getWriter().write(
-          "<?xml version=\"1.0\" encoding=\"UTF-8\"?><partial-response><redirect url=\"" + url + "\"/></partial-response>");
-      return;
-    }
-    resposta.sendRedirect(url);
   }
 }
