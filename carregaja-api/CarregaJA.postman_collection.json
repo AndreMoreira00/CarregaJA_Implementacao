@@ -1,7 +1,7 @@
 {
   "info": {
-    "name": "CarregaJA API",
-    "description": "Roteiro de demonstração da carregaja-api, com os dados da História de Usuário.\n\n**Como usar:** rode `scripts\\zerar-banco.bat` e depois execute a coleção inteira, de cima para baixo, no Collection Runner. Cada requisição confere a própria resposta, e os tokens e ids são guardados nas variáveis da coleção. A ordem importa: a pasta 1 troca a senha da síndica, e a coleção só roda de novo depois de zerar o banco.\n\nOs demais cenários dos testes de aceitação estão nos testes de unidade da API (`scripts\\testar-api.bat`). O encerramento da sessão é do sprint 6: para repetir o início da recarga, zere o banco.",
+    "name": "CarregaJA API: UC01 e UC05",
+    "description": "Roteiro de demonstração do login e do cadastro de veículo, com os dados da História de Usuário.\n\n**Como usar:** rode `scripts\\zerar-banco.bat` e depois execute a coleção inteira, de cima para baixo, no Collection Runner. Cada requisição confere a própria resposta, e os tokens e ids são guardados nas variáveis da coleção. A ordem importa: a pasta 1 troca a senha da síndica, e a coleção só roda de novo depois de zerar o banco.\n\nOs demais cenários estão nos testes de unidade da API (`scripts\\testar-api.bat`).",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -21,11 +21,6 @@
       "type": "string"
     },
     {
-      "key": "senhaProvisoria",
-      "value": "provisoria123",
-      "type": "string"
-    },
-    {
       "key": "senhaDefinitiva",
       "value": "senha-definitiva-1",
       "type": "string"
@@ -36,31 +31,47 @@
       "type": "string"
     },
     {
-      "key": "tokenAna",
-      "value": "",
-      "type": "string"
-    },
-    {
-      "key": "tokenCarlos",
-      "value": "",
-      "type": "string"
-    },
-    {
-      "key": "idG01",
-      "value": "",
-      "type": "string"
-    },
-    {
-      "key": "idG02",
+      "key": "idLeaf",
       "value": "",
       "type": "string"
     }
   ],
   "item": [
     {
-      "name": "1. UC01: a síndica entra",
-      "description": "Os dados da síndica vêm de `scripts\\config.bat`.",
+      "name": "1. UC01: primeiro acesso",
+      "description": "A síndica do apartamento 42, com os dados de `scripts\\config.bat`. Ela também é moradora, então pode ter veículo.",
       "item": [
+        {
+          "name": "Sem token: recusado",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/veiculos/meu",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "veiculos",
+                "meu"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 401\", () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ]
+        },
         {
           "name": "Senha incorreta: recusada, sem dizer qual campo",
           "request": {
@@ -83,6 +94,52 @@
             "body": {
               "mode": "raw",
               "raw": "{\n  \"email\": \"{{emailSindica}}\",\n  \"senha\": \"errada\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 401\", () => pm.response.to.have.status(401));",
+                  "const corpo = pm.response.text() ? pm.response.json() : {};",
+                  "pm.test(\"Mensagem: E-mail ou senha incorretos.\", () => pm.expect(corpo.mensagem).to.include(\"E-mail ou senha incorretos.\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "E-mail desconhecido: a mesma mensagem",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/autenticacao",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "autenticacao"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"ninguem@carregaja.test\",\n  \"senha\": \"errada\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -148,6 +205,9 @@
                   "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
                   "const corpo = pm.response.text() ? pm.response.json() : {};",
                   "pm.test(\"Precisa trocar a senha\", () => pm.expect(corpo.usuario.trocarSenha).to.eql(true));",
+                  "pm.test(\"Apartamento 42\", () => pm.expect(corpo.usuario.apartamento.numero).to.eql(\"42\"));",
+                  "pm.test(\"Tem os dois perfis\", () => pm.expect(corpo.usuario.perfis).to.have.members([\"MORADOR\", \"SINDICO\"]));",
+                  "pm.test(\"Não devolve a senha\", () => pm.expect(corpo.usuario.senha).to.eql(undefined));",
                   "pm.collectionVariables.set(\"tokenSindica\", corpo.token);"
                 ]
               }
@@ -160,12 +220,13 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/usuarios",
+              "raw": "{{baseUrl}}/veiculos/meu",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "usuarios"
+                "veiculos",
+                "meu"
               ]
             },
             "auth": {
@@ -186,6 +247,60 @@
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"Status 403\", () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Senha atual incorreta na troca",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/autenticacao/senha",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "autenticacao",
+                "senha"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"senhaAtual\": \"errada-123\",\n  \"senhaNova\": \"{{senhaDefinitiva}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenSindica}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 422\", () => pm.response.to.have.status(422));",
+                  "const corpo = pm.response.text() ? pm.response.json() : {};",
+                  "pm.test(\"Mensagem: A senha atual está incorreta.\", () => pm.expect(corpo.mensagem).to.include(\"A senha atual está incorreta.\"));"
                 ]
               }
             }
@@ -242,438 +357,74 @@
               }
             }
           ]
+        },
+        {
+          "name": "Login com a senha nova",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/autenticacao",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "autenticacao"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{emailSindica}}\",\n  \"senha\": \"{{senhaDefinitiva}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const corpo = pm.response.text() ? pm.response.json() : {};",
+                  "pm.test(\"Não precisa mais trocar\", () => pm.expect(corpo.usuario.trocarSenha).to.eql(false));",
+                  "pm.collectionVariables.set(\"tokenSindica\", corpo.token);"
+                ]
+              }
+            }
+          ]
         }
       ]
     },
     {
-      "name": "2. UC09: moradores",
-      "description": "Ana no apartamento 42 e Carlos no 17.",
+      "name": "2. UC05: Manter Veículo",
+      "description": "Nissan Leaf: 40 kWh e 6,6 kW. HU-05.",
       "item": [
         {
-          "name": "Cadastrar Ana Souza (apto 42)",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/usuarios",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "usuarios"
-              ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"nome\": \"Ana Souza\",\n  \"email\": \"apto42@carregaja.test\",\n  \"apartamento\": \"42\",\n  \"sindico\": false,\n  \"senhaProvisoria\": \"{{senhaProvisoria}}\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{tokenSindica}}",
-                  "type": "string"
-                }
-              ]
-            }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"Status 201\", () => pm.response.to.have.status(201));",
-                  "const corpo = pm.response.text() ? pm.response.json() : {};",
-                  "pm.test(\"apartamento.numero = 42\", () => pm.expect(corpo.apartamento.numero).to.eql(\"42\"));"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "name": "Cadastrar Carlos Lima (apto 17)",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/usuarios",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "usuarios"
-              ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"nome\": \"Carlos Lima\",\n  \"email\": \"apto17@carregaja.test\",\n  \"apartamento\": \"17\",\n  \"sindico\": false,\n  \"senhaProvisoria\": \"{{senhaProvisoria}}\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{tokenSindica}}",
-                  "type": "string"
-                }
-              ]
-            }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"Status 201\", () => pm.response.to.have.status(201));"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "name": "E-mail duplicado: recusado",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/usuarios",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "usuarios"
-              ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"nome\": \"Ana Repetida\",\n  \"email\": \"apto42@carregaja.test\",\n  \"apartamento\": \"42\",\n  \"sindico\": false,\n  \"senhaProvisoria\": \"{{senhaProvisoria}}\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{tokenSindica}}",
-                  "type": "string"
-                }
-              ]
-            }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"Status 409\", () => pm.response.to.have.status(409));",
-                  "const corpo = pm.response.text() ? pm.response.json() : {};",
-                  "pm.test(\"Mensagem: Este e-mail já está cadastrado.\", () => pm.expect(corpo.mensagem).to.include(\"Este e-mail já está cadastrado.\"));"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "name": "Login de Ana (senha provisória)",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/autenticacao",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "autenticacao"
-              ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"email\": \"apto42@carregaja.test\",\n  \"senha\": \"{{senhaProvisoria}}\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "auth": {
-              "type": "noauth"
-            }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
-                  "const corpo = pm.response.text() ? pm.response.json() : {};",
-                  "pm.test(\"Precisa trocar a senha\", () => pm.expect(corpo.usuario.trocarSenha).to.eql(true));",
-                  "pm.collectionVariables.set(\"tokenAna\", corpo.token);"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "name": "Ana troca a senha",
-          "request": {
-            "method": "PUT",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/autenticacao/senha",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "autenticacao",
-                "senha"
-              ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"senhaAtual\": \"{{senhaProvisoria}}\",\n  \"senhaNova\": \"{{senhaDefinitiva}}\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{tokenAna}}",
-                  "type": "string"
-                }
-              ]
-            }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"Status 204\", () => pm.response.to.have.status(204));"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "name": "Login de Carlos (senha provisória)",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/autenticacao",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "autenticacao"
-              ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"email\": \"apto17@carregaja.test\",\n  \"senha\": \"{{senhaProvisoria}}\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "auth": {
-              "type": "noauth"
-            }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
-                  "const corpo = pm.response.text() ? pm.response.json() : {};",
-                  "pm.test(\"Precisa trocar a senha\", () => pm.expect(corpo.usuario.trocarSenha).to.eql(true));",
-                  "pm.collectionVariables.set(\"tokenCarlos\", corpo.token);"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "name": "Carlos troca a senha",
-          "request": {
-            "method": "PUT",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/autenticacao/senha",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "autenticacao",
-                "senha"
-              ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"senhaAtual\": \"{{senhaProvisoria}}\",\n  \"senhaNova\": \"{{senhaDefinitiva}}\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{tokenCarlos}}",
-                  "type": "string"
-                }
-              ]
-            }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"Status 204\", () => pm.response.to.have.status(204));"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "name": "Morador não acessa o cadastro de moradores",
+          "name": "Ainda não há veículo",
           "request": {
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/usuarios",
+              "raw": "{{baseUrl}}/veiculos/meu",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "usuarios"
+                "veiculos",
+                "meu"
               ]
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{tokenAna}}",
-                  "type": "string"
-                }
-              ]
-            }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"Status 403\", () => pm.response.to.have.status(403));"
-                ]
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "3. UC07: vagas",
-      "description": "G-01 com 11,0 kW e G-02 com 7,4 kW.",
-      "item": [
-        {
-          "name": "Cadastrar G-01 (11,0 kW)",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/vagas",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "vagas"
-              ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"identificacao\": \"G-01\",\n  \"potenciaCarregador\": 11.0\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
             },
             "auth": {
               "type": "bearer",
@@ -692,128 +443,14 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test(\"Status 201\", () => pm.response.to.have.status(201));",
-                  "const corpo = pm.response.text() ? pm.response.json() : {};",
-                  "pm.collectionVariables.set(\"idG01\", corpo.id);"
+                  "pm.test(\"Status 404\", () => pm.response.to.have.status(404));"
                 ]
               }
             }
           ]
         },
         {
-          "name": "Cadastrar G-02 (7,4 kW)",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/vagas",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "vagas"
-              ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"identificacao\": \"G-02\",\n  \"potenciaCarregador\": 7.4\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{tokenSindica}}",
-                  "type": "string"
-                }
-              ]
-            }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"Status 201\", () => pm.response.to.have.status(201));",
-                  "const corpo = pm.response.text() ? pm.response.json() : {};",
-                  "pm.collectionVariables.set(\"idG02\", corpo.id);"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "name": "Código duplicado: recusado",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/vagas",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "vagas"
-              ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"identificacao\": \"g-01\",\n  \"potenciaCarregador\": 7.4\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{tokenSindica}}",
-                  "type": "string"
-                }
-              ]
-            }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"Status 409\", () => pm.response.to.have.status(409));",
-                  "const corpo = pm.response.text() ? pm.response.json() : {};",
-                  "pm.test(\"Mensagem: Já existe a vaga G-01.\", () => pm.expect(corpo.mensagem).to.include(\"Já existe a vaga G-01.\"));"
-                ]
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "4. UC05: veículos",
-      "description": "Nissan Leaf (40 kWh, 6,6 kW) da Ana e BYD Dolphin (60 kWh, 11,0 kW) do Carlos.",
-      "item": [
-        {
-          "name": "Capacidade zero: recusada",
+          "name": "HU-05 02: capacidade zero é recusada",
           "request": {
             "method": "POST",
             "header": [
@@ -833,7 +470,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"modelo\": \"Qualquer\",\n  \"capacidadeBateria\": 0,\n  \"potenciaMaxima\": 7\n}",
+              "raw": "{\n  \"modelo\": \"Nissan Leaf\",\n  \"capacidadeBateria\": 0,\n  \"potenciaMaxima\": 7\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -845,7 +482,7 @@
               "bearer": [
                 {
                   "key": "token",
-                  "value": "{{tokenAna}}",
+                  "value": "{{tokenSindica}}",
                   "type": "string"
                 }
               ]
@@ -864,7 +501,109 @@
           ]
         },
         {
-          "name": "Nissan Leaf da Ana",
+          "name": "HU-05 03: potência negativa é recusada",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/veiculos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "veiculos"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"modelo\": \"Nissan Leaf\",\n  \"capacidadeBateria\": 40,\n  \"potenciaMaxima\": -2\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenSindica}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 400\", () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Modelo em branco é recusado",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/veiculos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "veiculos"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"modelo\": \" \",\n  \"capacidadeBateria\": 40,\n  \"potenciaMaxima\": 6.6\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenSindica}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 400\", () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "HU-05 01: cadastra o Nissan Leaf",
           "request": {
             "method": "POST",
             "header": [
@@ -896,7 +635,7 @@
               "bearer": [
                 {
                   "key": "token",
-                  "value": "{{tokenAna}}",
+                  "value": "{{tokenSindica}}",
                   "type": "string"
                 }
               ]
@@ -910,14 +649,18 @@
                 "exec": [
                   "pm.test(\"Status 201\", () => pm.response.to.have.status(201));",
                   "const corpo = pm.response.text() ? pm.response.json() : {};",
-                  "pm.test(\"modelo = Nissan Leaf\", () => pm.expect(corpo.modelo).to.eql(\"Nissan Leaf\"));"
+                  "pm.test(\"modelo = Nissan Leaf\", () => pm.expect(corpo.modelo).to.eql(\"Nissan Leaf\"));",
+                  "pm.test(\"capacidadeBateria = 40.0\", () => pm.expect(corpo.capacidadeBateria).to.eql(40.0));",
+                  "pm.test(\"potenciaMaxima = 6.6\", () => pm.expect(corpo.potenciaMaxima).to.eql(6.6));",
+                  "pm.collectionVariables.set(\"idLeaf\", corpo.id);",
+                  "pm.test(\"Devolve o endereço\", () => pm.response.to.have.header(\"Location\"));"
                 ]
               }
             }
           ]
         },
         {
-          "name": "BYD Dolphin do Carlos",
+          "name": "Segundo veículo do mesmo morador é recusado",
           "request": {
             "method": "POST",
             "header": [
@@ -937,115 +680,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"modelo\": \"BYD Dolphin\",\n  \"capacidadeBateria\": 60,\n  \"potenciaMaxima\": 11\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{tokenCarlos}}",
-                  "type": "string"
-                }
-              ]
-            }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"Status 201\", () => pm.response.to.have.status(201));"
-                ]
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "5. UC08: tarifa",
-      "description": "R$ 0,92 por kWh, vigente a partir do cadastro.",
-      "item": [
-        {
-          "name": "Morador não define tarifa",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/tarifas",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "tarifas"
-              ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"valorKwh\": 0.5\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{tokenAna}}",
-                  "type": "string"
-                }
-              ]
-            }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"Status 403\", () => pm.response.to.have.status(403));"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "name": "Tarifa de R$ 0,92",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/tarifas",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "tarifas"
-              ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"valorKwh\": 0.92\n}",
+              "raw": "{\n  \"modelo\": \"Outro\",\n  \"capacidadeBateria\": 40,\n  \"potenciaMaxima\": 6.6\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -1058,121 +693,6 @@
                 {
                   "key": "token",
                   "value": "{{tokenSindica}}",
-                  "type": "string"
-                }
-              ]
-            }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"Status 201\", () => pm.response.to.have.status(201));",
-                  "const corpo = pm.response.text() ? pm.response.json() : {};",
-                  "pm.test(\"valorKwh = 0.92\", () => pm.expect(corpo.valorKwh).to.eql(0.92));"
-                ]
-              }
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "name": "6. UC03 e UC04: recarga e previsão",
-      "description": "A regra central: potência efetiva = min(carregador, veículo). O encerramento é do sprint 6.",
-      "item": [
-        {
-          "name": "Leaf na G-02, bateria 30%: o veículo limita a 6,6 kW",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/sessoes",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "sessoes"
-              ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"vagaId\": \"{{idG02}}\",\n  \"nivelBateria\": 30\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{tokenAna}}",
-                  "type": "string"
-                }
-              ]
-            }
-          },
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "pm.test(\"Status 201\", () => pm.response.to.have.status(201));",
-                  "const corpo = pm.response.text() ? pm.response.json() : {};",
-                  "pm.test(\"Potência efetiva 6,6 kW\", () => pm.expect(corpo.potenciaEfetiva).to.eql(6.6));",
-                  "pm.test(\"Energia a repor 28,0 kWh\", () => pm.expect(corpo.energiaARepor).to.eql(28.0));",
-                  "pm.test(\"Previsão = início + 4h15\", () => pm.expect(new Date(corpo.previsaoConclusao) - new Date(corpo.inicio)).to.eql((4 * 60 + 15) * 60 * 1000));",
-                  "pm.test(\"estado = EM_ANDAMENTO\", () => pm.expect(corpo.estado).to.eql(\"EM_ANDAMENTO\"));"
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "name": "Carlos na G-02: vaga ocupada, com a previsão",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/sessoes",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "sessoes"
-              ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"vagaId\": \"{{idG02}}\",\n  \"nivelBateria\": 20\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "auth": {
-              "type": "bearer",
-              "bearer": [
-                {
-                  "key": "token",
-                  "value": "{{tokenCarlos}}",
                   "type": "string"
                 }
               ]
@@ -1186,46 +706,33 @@
                 "exec": [
                   "pm.test(\"Status 409\", () => pm.response.to.have.status(409));",
                   "const corpo = pm.response.text() ? pm.response.json() : {};",
-                  "pm.test(\"Mensagem: Previsão de liberação\", () => pm.expect(corpo.mensagem).to.include(\"Previsão de liberação\"));"
+                  "pm.test(\"Mensagem: Você já tem um veículo cadastrado.\", () => pm.expect(corpo.mensagem).to.include(\"Você já tem um veículo cadastrado.\"));"
                 ]
               }
             }
           ]
         },
         {
-          "name": "Dolphin na G-01, bateria 20%: 11,0 kW",
+          "name": "Consulta o próprio veículo",
           "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
+            "method": "GET",
+            "header": [],
             "url": {
-              "raw": "{{baseUrl}}/sessoes",
+              "raw": "{{baseUrl}}/veiculos/meu",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "sessoes"
+                "veiculos",
+                "meu"
               ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"vagaId\": \"{{idG01}}\",\n  \"nivelBateria\": 20\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
             },
             "auth": {
               "type": "bearer",
               "bearer": [
                 {
                   "key": "token",
-                  "value": "{{tokenCarlos}}",
+                  "value": "{{tokenSindica}}",
                   "type": "string"
                 }
               ]
@@ -1237,20 +744,57 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test(\"Status 201\", () => pm.response.to.have.status(201));",
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
                   "const corpo = pm.response.text() ? pm.response.json() : {};",
-                  "pm.test(\"Potência efetiva 11,0 kW\", () => pm.expect(corpo.potenciaEfetiva).to.eql(11.0));",
-                  "pm.test(\"Energia a repor 48,0 kWh\", () => pm.expect(corpo.energiaARepor).to.eql(48.0));",
-                  "pm.test(\"Previsão = início + 4h22\", () => pm.expect(new Date(corpo.previsaoConclusao) - new Date(corpo.inicio)).to.eql((4 * 60 + 22) * 60 * 1000));"
+                  "pm.test(\"modelo = Nissan Leaf\", () => pm.expect(corpo.modelo).to.eql(\"Nissan Leaf\"));"
                 ]
               }
             }
           ]
         },
         {
-          "name": "Reajuste para R$ 1,05",
+          "name": "A síndica lista os veículos",
           "request": {
-            "method": "POST",
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/veiculos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "veiculos"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenSindica}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const corpo = pm.response.text() ? pm.response.json() : {};",
+                  "pm.test(\"Um veículo\", () => pm.expect(corpo.length).to.eql(1));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Altera a capacidade para 60 kWh",
+          "request": {
+            "method": "PUT",
             "header": [
               {
                 "key": "Content-Type",
@@ -1258,17 +802,18 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/tarifas",
+              "raw": "{{baseUrl}}/veiculos/{{idLeaf}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "tarifas"
+                "veiculos",
+                "{{idLeaf}}"
               ]
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"valorKwh\": 1.05\n}",
+              "raw": "{\n  \"modelo\": \"Nissan Leaf\",\n  \"capacidadeBateria\": 60,\n  \"potenciaMaxima\": 6.6\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -1292,35 +837,49 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test(\"Status 201\", () => pm.response.to.have.status(201));",
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
                   "const corpo = pm.response.text() ? pm.response.json() : {};",
-                  "pm.test(\"valorKwh = 1.05\", () => pm.expect(corpo.valorKwh).to.eql(1.05));"
+                  "pm.test(\"capacidadeBateria = 60.0\", () => pm.expect(corpo.capacidadeBateria).to.eql(60.0));"
                 ]
               }
             }
           ]
         },
         {
-          "name": "A sessão da Ana mantém a tarifa do início, R$ 0,92",
+          "name": "Veículo inexistente",
           "request": {
-            "method": "GET",
-            "header": [],
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "url": {
-              "raw": "{{baseUrl}}/sessoes/minha",
+              "raw": "{{baseUrl}}/veiculos/999999",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
-                "sessoes",
-                "minha"
+                "veiculos",
+                "999999"
               ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"modelo\": \"Nissan Leaf\",\n  \"capacidadeBateria\": 60,\n  \"potenciaMaxima\": 6.6\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             },
             "auth": {
               "type": "bearer",
               "bearer": [
                 {
                   "key": "token",
-                  "value": "{{tokenAna}}",
+                  "value": "{{tokenSindica}}",
                   "type": "string"
                 }
               ]
@@ -1332,10 +891,7 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
-                  "const corpo = pm.response.text() ? pm.response.json() : {};",
-                  "pm.test(\"vaga = G-02\", () => pm.expect(corpo.vaga).to.eql(\"G-02\"));",
-                  "pm.test(\"valorKwh = 0.92\", () => pm.expect(corpo.valorKwh).to.eql(0.92));"
+                  "pm.test(\"Status 404\", () => pm.response.to.have.status(404));"
                 ]
               }
             }

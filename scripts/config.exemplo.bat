@@ -19,3 +19,5 @@ rem Primeiro sindico, criado so se o banco nao tiver nenhum. A colecao do Postma
 set "CARREGAJA_SINDICO_NOME=Sindica do Condominio"
 set "CARREGAJA_SINDICO_EMAIL=sindica@carregaja.test"
 set "CARREGAJA_SINDICO_SENHA=provisoria-sindica"
+rem Com apartamento, ele tambem e morador e pode cadastrar veiculo. O Postman usa este valor.
+set "CARREGAJA_SINDICO_APARTAMENTO=42"

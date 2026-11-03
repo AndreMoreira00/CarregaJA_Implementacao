@@ -47,14 +47,13 @@ e o `zerar-banco` pede para apagar o banco à mão.
 
 ## Testar a API no Postman
 
-Importe `carregaja-api/CarregaJA.postman_collection.json`. É um roteiro de demonstração com os dados da História
-de Usuário (Nissan Leaf, BYD Dolphin, vagas G-01 e G-02, tarifa de R$ 0,92): o cadastro de cada coisa, o início da
-recarga com o cálculo e as recusas principais. Cada requisição confere a própria resposta. Os demais cenários
-estão nos testes de unidade (`scripts\testar-api.bat`).
+Importe `carregaja-api/CarregaJA.postman_collection.json`. É um roteiro de demonstração do login e do cadastro de
+veículo, com os dados da História de Usuário (Nissan Leaf, 40 kWh e 6,6 kW) e as recusas principais. Cada requisição
+confere a própria resposta. Os demais cenários estão nos testes de unidade (`scripts\testar-api.bat`).
 
 1. Rode `scripts\zerar-banco.bat`: a coleção começa pelo primeiro acesso da síndica.
 2. No Postman, execute a coleção inteira, de cima para baixo (*Run collection*). Os tokens e os ids ficam nas
-   variáveis da coleção. São 25 requisições e 45 verificações.
+   variáveis da coleção. São 18 requisições e 34 verificações.
 3. Depois disso, qualquer requisição pode ser repetida à mão. Para executar a coleção inteira de novo, zere o banco.
 
 A síndica usa os dados de `scripts/config.bat`; se você os mudou, ajuste as variáveis `emailSindica` e
