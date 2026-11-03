@@ -11,7 +11,7 @@ if "%MYSQL_SENHA%"=="" (
   echo Informe MYSQL_SENHA em scripts\config.bat.
   exit /b 1
 )
-rem O cliente do MySQL le a senha daqui, sem ela aparecer na linha de comando
+rem Variavel lida pelo cliente do MySQL, assim a senha nao aparece na linha de comando
 set "MYSQL_PWD=%MYSQL_SENHA%"
 set "CATALINA_HOME=%TOMCAT_DIR%"
 exit /b 0

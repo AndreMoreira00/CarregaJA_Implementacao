@@ -1,5 +1,5 @@
 @echo off
-rem A ordem importa: MySQL, API (precisa do banco), telas no Tomcat (chamam a API).
+rem Sobe o MySQL, depois a API, que depende do banco, e por ultimo as telas no Tomcat, que dependem da API.
 call "%~dp0_comum.bat" || goto falhou
 call "%~dp0iniciar-mysql.bat" || goto falhou
 call "%~dp0iniciar-api.bat" || goto falhou

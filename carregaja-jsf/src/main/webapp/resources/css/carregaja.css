@@ -1,4 +1,4 @@
-/* Ajustes sobre o tema Saga do PrimeFaces. O #conteudo dá a especificidade para vencer as regras do tema. */
+/* Ajustes no tema Saga do PrimeFaces. Os seletores usam #conteudo para ter prioridade sobre as regras do tema. */
 
 body {
   margin: 0;
@@ -57,7 +57,7 @@ body {
   width: 100%;
 }
 
-/* O tema joga o X para fora da caixa, e o ícone flutuante desalinha a segunda mensagem em diante */
+/* No tema, o botão de fechar fica fora da caixa e o ícone desalinha as mensagens a partir da segunda */
 #conteudo .ui-messages > div {
   position: relative;
   display: flex;

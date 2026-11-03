@@ -39,10 +39,10 @@ public class Usuario {
 
   private boolean ativo = true;
 
-  // A senha nasce provisória: enquanto for true, o usuário só pode trocá-la
+  // Começa como true porque a senha inicial é provisória e precisa ser trocada no primeiro acesso
   private boolean trocarSenha = true;
 
-  // Opcional: o preposto da administradora que atua como síndico não mora no condomínio
+  // Pode ficar nulo, porque o síndico pode ser um preposto da administradora que não mora no condomínio
   @ManyToOne
   private Apartamento apartamento;
 

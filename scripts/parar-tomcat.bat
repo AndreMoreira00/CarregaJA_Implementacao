@@ -1,5 +1,5 @@
 @echo off
-rem Desliga o Tomcat. Se ele nao obedecer em 10 s, encerra o processo.
+rem Desliga o Tomcat. Se ele nao parar em 10 s, encerra o processo.
 call "%~dp0_comum.bat" || exit /b 1
 call "%~dp0_porta.bat" 8080
 if errorlevel 1 (

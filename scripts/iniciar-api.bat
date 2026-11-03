@@ -1,5 +1,5 @@
 @echo off
-rem Sobe a carregaja-api numa janela propria: http://localhost:8081. Precisa do MySQL ligado.
+rem Sobe a carregaja-api em outra janela, em http://localhost:8081. O MySQL precisa estar ligado.
 call "%~dp0_comum.bat" || exit /b 1
 call "%~dp0_porta.bat" 8081
 if not errorlevel 1 (

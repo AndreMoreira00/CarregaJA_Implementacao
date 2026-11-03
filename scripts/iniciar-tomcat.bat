@@ -1,5 +1,5 @@
 @echo off
-rem Liga o Tomcat 9 em http://localhost:8080, na janela propria dele.
+rem Liga o Tomcat 9 em outra janela, em http://localhost:8080.
 call "%~dp0_comum.bat" || exit /b 1
 call "%~dp0_porta.bat" 8080
 if not errorlevel 1 (

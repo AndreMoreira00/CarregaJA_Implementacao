@@ -145,7 +145,7 @@ class AutenticacaoControllerTest extends ControleTesteBase {
         .andExpect(status().isUnauthorized());
   }
 
-  // HU-09, teste 04: desativar revoga o acesso mesmo de quem já tinha token
+  // HU-09, teste 04. Usuário desativado perde o acesso mesmo com um token ainda válido
   @Test
   void tokenDeUsuarioDesativadoDevolve401() throws Exception {
     Usuario desativado = morador();

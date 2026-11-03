@@ -1,5 +1,5 @@
 @echo off
-rem Desliga o MySQL, se foi este projeto que o subiu pela pasta MYSQL_DIR.
+rem Desliga o MySQL iniciado pela pasta MYSQL_DIR. Com MYSQL_DIR vazio, nao faz nada.
 call "%~dp0_comum.bat" || exit /b 1
 call "%~dp0_porta.bat" 3306
 if errorlevel 1 (

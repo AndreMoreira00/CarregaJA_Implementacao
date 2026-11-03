@@ -1,6 +1,6 @@
 package br.edu.ifsp.carregaja.service;
 
-/** Falha ao falar com a API, com a mensagem que o usuário vê na tela. */
+/** Erro ao chamar a API. A mensagem é mostrada ao usuário. */
 public class ApiException extends Exception {
   private static final long serialVersionUID = 1L;
 

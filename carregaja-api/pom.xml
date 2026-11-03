@@ -65,7 +65,7 @@
       <version>0.12.6</version>
       <scope>runtime</scope>
     </dependency>
-    <!-- No Tomcat externo o servidor ja existe; o embutido fica so para o spring-boot:run -->
+    <!-- Tomcat embutido usado so no spring-boot:run; no Tomcat externo ele nao entra -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-tomcat</artifactId>

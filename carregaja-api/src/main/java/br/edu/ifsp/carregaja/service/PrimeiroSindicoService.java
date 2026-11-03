@@ -14,7 +14,7 @@ import br.edu.ifsp.carregaja.repository.UsuarioRepository;
 
 import lombok.extern.slf4j.Slf4j;
 
-/** Quem cadastra moradores é o síndico, então o primeiro síndico nasce da configuração. */
+/** Cria o primeiro síndico a partir da configuração, já que é o síndico quem cadastra os moradores. */
 @Slf4j
 @Service
 public class PrimeiroSindicoService implements ApplicationRunner {
@@ -64,7 +64,7 @@ public class PrimeiroSindicoService implements ApplicationRunner {
     log.info("Primeiro síndico criado: {}", sindico.getEmail());
   }
 
-  // HU-01, teste 04: o síndico que também mora no condomínio tem os dois perfis
+  // Usado quando o síndico também mora no condomínio e fica com os dois perfis (HU-01, teste 04)
   private Apartamento buscarOuCriarApartamento() {
     return apartamentoRepository.findByNumero(apartamento.trim()).orElseGet(() -> {
       Apartamento novo = new Apartamento();

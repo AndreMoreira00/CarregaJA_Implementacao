@@ -19,7 +19,7 @@ import br.edu.ifsp.carregaja.model.Usuario;
 import br.edu.ifsp.carregaja.repository.UsuarioRepository;
 import br.edu.ifsp.carregaja.service.TokenService;
 
-/** Identifica o usuário pelo token e lê do banco a situação dele: desativar revoga o acesso na hora (HU-09, teste 04). */
+/** Busca o usuário no banco a cada requisição, assim quem é desativado perde o acesso na hora (HU-09, teste 04). */
 public class TokenFiltro extends OncePerRequestFilter {
 
   private static final String PREFIXO = "Bearer ";
@@ -50,7 +50,7 @@ public class TokenFiltro extends OncePerRequestFilter {
         new UsernamePasswordAuthenticationToken(usuario, null, permissoes(usuario)));
   }
 
-  // Com a senha provisória, nenhum perfil vale: só a rota de troca, que pede apenas autenticação
+  // Com senha provisória o usuário fica sem perfil e só consegue acessar a rota de troca de senha
   private List<SimpleGrantedAuthority> permissoes(Usuario usuario) {
     if (usuario.isTrocarSenha()) {
       return List.of(new SimpleGrantedAuthority("ROLE_TROCA_SENHA"));

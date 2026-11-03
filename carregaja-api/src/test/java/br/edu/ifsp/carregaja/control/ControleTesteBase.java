@@ -18,7 +18,7 @@ import br.edu.ifsp.carregaja.model.Usuario;
 import br.edu.ifsp.carregaja.repository.UsuarioRepository;
 import br.edu.ifsp.carregaja.service.TokenService;
 
-/** Os testes das rotas passam pelas regras de segurança de verdade, com um token de verdade. */
+/** Base dos testes de rota. Usa a configuração de segurança da aplicação e gera um token válido para o usuário. */
 @Import({SegurancaConfig.class, TokenService.class})
 abstract class ControleTesteBase {
 

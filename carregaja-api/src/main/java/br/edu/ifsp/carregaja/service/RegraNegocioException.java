@@ -4,7 +4,7 @@ import org.springframework.http.HttpStatus;
 
 import lombok.Getter;
 
-/** Recusa de uma regra de negócio, com a mensagem que o usuário vê na tela. */
+/** Lançada quando uma regra de negócio é violada. A mensagem é mostrada ao usuário. */
 @Getter
 public class RegraNegocioException extends RuntimeException {
   private static final long serialVersionUID = 1L;

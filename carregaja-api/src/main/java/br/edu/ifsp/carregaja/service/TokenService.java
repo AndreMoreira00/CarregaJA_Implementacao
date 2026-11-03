@@ -17,7 +17,7 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 
-/** O token só identifica o usuário: perfis e situação são lidos do banco a cada requisição. */
+/** Gera e lê o token, que guarda só a identificação do usuário. Perfis e situação vêm do banco a cada requisição. */
 @Service
 public class TokenService {
 

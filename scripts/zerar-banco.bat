@@ -1,6 +1,6 @@
 @echo off
 rem APAGA o banco de desenvolvimento e sobe a API, que recria as tabelas e o primeiro sindico.
-rem Use antes de rodar a colecao do Postman do comeco. So toca no banco CARREGAJA_BANCO.
+rem Use antes de rodar a colecao do Postman do comeco. Afeta apenas o banco CARREGAJA_BANCO.
 call "%~dp0_comum.bat" || exit /b 1
 echo Isto APAGA todos os dados do banco "%CARREGAJA_BANCO%".
 set "_confirma="

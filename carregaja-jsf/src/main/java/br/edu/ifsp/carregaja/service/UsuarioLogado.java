@@ -10,7 +10,7 @@ import br.edu.ifsp.carregaja.model.Usuario;
 
 import lombok.Getter;
 
-/** Quem entrou nesta sessão do navegador e o token para falar com a API. */
+/** Guarda na sessão o usuário logado e o token usado nas chamadas à API. */
 @Named
 @SessionScoped
 public class UsuarioLogado implements Serializable {

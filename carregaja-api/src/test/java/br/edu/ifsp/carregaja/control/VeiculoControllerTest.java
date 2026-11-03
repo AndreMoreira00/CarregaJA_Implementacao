@@ -139,7 +139,7 @@ class VeiculoControllerTest extends ControleTesteBase {
     verify(veiculoService, never()).atualizar(any(), any(), any());
   }
 
-  // HU-05, teste 01: o veículo fica com o morador do token, sem o corpo informar de quem é
+  // HU-05, teste 01. O veículo é buscado pelo morador do token, sem informar o dono na requisição
   @Test
   void buscarOMeuDevolveOVeiculoDoMorador() throws Exception {
     when(veiculoService.buscarDoUsuario(any(Usuario.class))).thenReturn(Optional.of(leaf()));

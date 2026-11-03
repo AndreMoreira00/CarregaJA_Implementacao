@@ -76,7 +76,7 @@ class AutenticacaoServiceTest {
     assertEquals(usuario, service.autenticar(login("  APTO42@carregaja.test ", "senha-valida")).getUsuario());
   }
 
-  // HU-01, teste 02: senha errada e e-mail desconhecido dão a mesma resposta
+  // HU-01, teste 02. Senha errada e e-mail desconhecido devem dar a mesma resposta
   @Test
   void senhaIncorretaEEmailDesconhecidoTemAMesmaRecusa() {
     when(usuarioRepository.findByEmail("outro@carregaja.test")).thenReturn(Optional.empty());

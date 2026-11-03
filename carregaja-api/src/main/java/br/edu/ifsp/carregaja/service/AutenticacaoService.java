@@ -15,7 +15,7 @@ import br.edu.ifsp.carregaja.view.TrocarSenhaRequest;
 @Service
 public class AutenticacaoService {
 
-  // A mesma mensagem para e-mail e senha: não indica qual campo está errado (HU-01, teste 02)
+  // Mesma mensagem para e-mail e senha, para não revelar qual dos dois está errado (HU-01, teste 02)
   private static final String CREDENCIAIS_INVALIDAS = "E-mail ou senha incorretos.";
 
   private final UsuarioRepository usuarioRepository;

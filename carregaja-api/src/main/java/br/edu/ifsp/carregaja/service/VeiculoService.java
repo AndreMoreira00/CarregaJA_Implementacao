@@ -38,7 +38,7 @@ public class VeiculoService {
     return veiculoRepository.findByUsuarioId(usuario.getId());
   }
 
-  // O síndico confere o cadastro dos veículos (RI-01); o morador só vê o próprio
+  // O síndico consulta qualquer veículo para conferir o cadastro (RI-01); o morador consulta só o próprio
   public Optional<Veiculo> buscarPorId(Usuario usuario, Long id) {
     Optional<Veiculo> veiculo = veiculoRepository.findById(id);
     if (!usuario.temPerfil(Perfil.SINDICO)) {

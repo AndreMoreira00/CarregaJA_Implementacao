@@ -1,5 +1,5 @@
 @echo off
-rem Desliga na ordem inversa: telas, API, banco.
+rem Desliga as telas, depois a API e por ultimo o banco.
 call "%~dp0parar-tomcat.bat"
 call "%~dp0parar-api.bat"
 call "%~dp0parar-mysql.bat"

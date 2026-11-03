@@ -1,5 +1,5 @@
 @echo off
-rem Compila o carregaja-jsf e poe o .war no Tomcat. Com o Tomcat ligado, ele recarrega sozinho em cerca de 30 s.
+rem Compila o carregaja-jsf e copia o .war para o Tomcat. Se o Tomcat estiver ligado, ele recarrega em cerca de 30 s.
 call "%~dp0_comum.bat" || exit /b 1
 pushd "%RAIZ%\carregaja-jsf"
 echo [JSF] compilando...
