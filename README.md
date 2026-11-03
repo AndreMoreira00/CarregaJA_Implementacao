@@ -15,7 +15,7 @@ São dois projetos Maven, como no Modelo de Arquitetura:
 Os dois usam a linha `javax.*`, a que roda no Tomcat 9. Os pacotes são organizados por camada,
 como nos exercícios de LP2 (`br.edu.ifsp.carregaja.control`, `.service`, `.repository`, `.model`,
 `.view` na API; `.controller`, `.service`, `.model` nas telas). O nome do caso de uso fica na pasta
-da página: `webapp/restricted/autenticarusuario/`.
+da página: `webapp/restricted/manterveiculo/`.
 
 ## O que precisa estar instalado
 
@@ -130,8 +130,8 @@ Nenhum deles precisa de banco.
 
 ## O que já está implementado
 
-Por enquanto, a única tela pronta é a de login (UC01), com a troca de senha. Os demais casos de uso estão
-prontos na API e são usados pelas rotas acima. As telas deles estão guardadas na branch `telas-sprint-5`
+Por enquanto, as telas prontas são a de login (UC01), com a troca de senha, e a do veículo (UC05). Os demais
+casos de uso estão prontos na API e são usados pelas rotas acima. As telas deles estão guardadas na branch `telas-sprint-5`
 do fork [R1ck-dev/CarregaJA_Implementacao](https://github.com/R1ck-dev/CarregaJA_Implementacao/tree/telas-sprint-5).
 
 | Caso de uso | Situação |
