@@ -19,6 +19,8 @@ import br.edu.ifsp.carregaja.service.UsuarioLogado;
 @WebFilter(urlPatterns = {"/restricted/*", "/index.xhtml"}, dispatcherTypes = {DispatcherType.REQUEST, DispatcherType.FORWARD})
 public class AutenticacaoFilter implements Filter {
 
+  private static final String INICIO = "/index.xhtml";
+  private static final String PAGINAS_DO_MORADOR = "/restricted/manterveiculo/";
   private static final String LOGIN = "/autenticarusuario/AutenticarUsuarioView.xhtml";
   private static final String TROCAR_SENHA = "/restricted/autenticarusuario/TrocarSenhaView.xhtml";
 
@@ -49,7 +51,7 @@ public class AutenticacaoFilter implements Filter {
     if (usuarioLogado.isTrocarSenha() && !pagina.equals(TROCAR_SENHA)) {
       return TROCAR_SENHA;
     }
-    return null;
+    return pagina.startsWith(PAGINAS_DO_MORADOR) && !usuarioLogado.isMorador() ? INICIO : null;
   }
 
   // Uma requisição AJAX do JSF não segue o 302: precisa da resposta que o JavaScript dele entende
