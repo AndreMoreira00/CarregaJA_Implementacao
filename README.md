@@ -23,6 +23,41 @@ da página: `webapp/restricted/autenticarusuario/`.
 - **MySQL 8**, rodando em `localhost:3306`
 - **Tomcat 9** para o front-end
 
+## Jeito rápido: scripts (Windows)
+
+A pasta `scripts/` sobe tudo com dois cliques. Na primeira vez, rode qualquer um deles: ele cria
+`scripts/config.bat`, que o git ignora. Informe ali a senha do MySQL e os caminhos da sua máquina.
+
+| Script | Faz |
+|---|---|
+| `iniciar-tudo.bat` | Liga o MySQL e a API, publica as telas, liga o Tomcat e abre o navegador |
+| `parar-tudo.bat` | Desliga Tomcat, API e MySQL |
+| `reiniciar-tudo.bat` | Desliga e liga tudo de novo |
+| `status.bat` | Mostra o que está no ar |
+| `reiniciar-api.bat` | Depois de mudar algo na API |
+| `reiniciar-tomcat.bat` | Recompila as telas e reinicia o Tomcat |
+| `publicar-jsf.bat` | Recompila as telas sem reiniciar: o Tomcat recarrega sozinho em cerca de 30 s |
+| `zerar-banco.bat` | **Apaga o banco** configurado, depois de pedir confirmação, e sobe a API, que recria as tabelas e o primeiro síndico |
+| `testar-api.bat` | Roda os testes de unidade da API |
+| `iniciar-mysql`, `iniciar-api`, `iniciar-tomcat`, `parar-mysql`, `parar-api`, `parar-tomcat` | Cada peça sozinha |
+
+Precisa do `mvn`, do `curl` e da variável `JAVA_HOME` no ambiente. Se o seu MySQL sobe por conta própria
+(serviço do Windows ou Docker), deixe `MYSQL_DIR` vazio em `config.bat`: os scripts só conferem a porta,
+e o `zerar-banco` pede para apagar o banco à mão.
+
+## Testar a API no Postman
+
+Importe `carregaja-api/CarregaJA.postman_collection.json`. A coleção usa os dados da História de Usuário
+(Nissan Leaf, BYD Dolphin, vagas G-01 e G-02, tarifa de R$ 0,92) e cada requisição confere a própria resposta.
+
+1. Rode `scripts\zerar-banco.bat`: a coleção começa pelo primeiro acesso da síndica.
+2. No Postman, execute a coleção inteira, de cima para baixo (*Run collection*). Os tokens e os ids ficam nas
+   variáveis da coleção. São 75 requisições e 135 verificações.
+3. Depois disso, qualquer requisição pode ser repetida à mão. Para executar a coleção inteira de novo, zere o banco.
+
+A síndica usa os dados de `scripts/config.bat`; se você os mudou, ajuste as variáveis `emailSindica` e
+`senhaSindicaProvisoria` da coleção.
+
 ## Como rodar
 
 ### 1. Banco
