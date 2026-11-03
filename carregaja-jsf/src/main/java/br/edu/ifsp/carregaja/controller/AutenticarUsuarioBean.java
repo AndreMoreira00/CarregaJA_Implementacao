@@ -51,7 +51,6 @@ public class AutenticarUsuarioBean implements Serializable {
       trocarIdDaSessao();
       return INICIO;
     } catch (ApiException e) {
-      System.out.println("AutenticarUsuario: " + e.getMessage());
       FacesContext.getCurrentInstance().addMessage(null,
           new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), null));
       return null;

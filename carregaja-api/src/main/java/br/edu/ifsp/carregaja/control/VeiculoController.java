@@ -20,9 +20,6 @@ import br.edu.ifsp.carregaja.model.Veiculo;
 import br.edu.ifsp.carregaja.service.VeiculoService;
 import br.edu.ifsp.carregaja.view.VeiculoRequest;
 
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
 @RestController
 @RequestMapping(path = "/veiculos")
 public class VeiculoController {
@@ -36,48 +33,29 @@ public class VeiculoController {
   @PostMapping
   public ResponseEntity<Veiculo> criar(@AuthenticationPrincipal Usuario usuario,
       @Valid @RequestBody VeiculoRequest requisicao, UriComponentsBuilder uriBuilder) {
-    log.info("POST /veiculos - cadastrando veículo '{}'", requisicao.getModelo());
     Veiculo veiculo = veiculoService.criar(usuario, requisicao);
     URI uri = uriBuilder.path("/veiculos/{id}").buildAndExpand(veiculo.getId()).toUri();
-    log.info("POST /veiculos - veículo cadastrado com id {} -> 201", veiculo.getId());
     return ResponseEntity.created(uri).body(veiculo);
   }
 
   @GetMapping
   public Iterable<Veiculo> listarTodos() {
-    log.info("GET /veiculos - listando os veículos");
     return veiculoService.listarTodos();
   }
 
   @GetMapping(path = "/meu")
   public ResponseEntity<Veiculo> buscarMeu(@AuthenticationPrincipal Usuario usuario) {
-    log.info("GET /veiculos/meu - veículo do usuário {}", usuario.getId());
     return ResponseEntity.of(veiculoService.buscarDoUsuario(usuario));
   }
 
   @GetMapping(path = "/{id}")
   public ResponseEntity<Veiculo> buscarPorId(@AuthenticationPrincipal Usuario usuario, @PathVariable("id") Long id) {
-    log.info("GET /veiculos/{} - buscando veículo", id);
-    return veiculoService.buscarPorId(usuario, id)
-        .map(ResponseEntity::ok)
-        .orElseGet(() -> {
-          log.warn("GET /veiculos/{} - veículo não encontrado -> 404", id);
-          return ResponseEntity.notFound().build();
-        });
+    return ResponseEntity.of(veiculoService.buscarPorId(usuario, id));
   }
 
   @PutMapping(path = "/{id}")
   public ResponseEntity<Veiculo> atualizar(@AuthenticationPrincipal Usuario usuario, @PathVariable("id") Long id,
       @Valid @RequestBody VeiculoRequest requisicao) {
-    log.info("PUT /veiculos/{} - alterando veículo", id);
-    return veiculoService.atualizar(usuario, id, requisicao)
-        .map(veiculo -> {
-          log.info("PUT /veiculos/{} - veículo alterado para '{}' -> 200", id, veiculo.getModelo());
-          return ResponseEntity.ok(veiculo);
-        })
-        .orElseGet(() -> {
-          log.warn("PUT /veiculos/{} - veículo não encontrado, nada foi alterado -> 404", id);
-          return ResponseEntity.notFound().build();
-        });
+    return ResponseEntity.of(veiculoService.atualizar(usuario, id, requisicao));
   }
 }

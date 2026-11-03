@@ -56,7 +56,6 @@ public class ManterVeiculoBean implements Serializable {
   }
 
   private void reclamar(ApiException e) {
-    System.out.println("ManterVeiculo: " + e.getMessage());
     adicionar(FacesMessage.SEVERITY_ERROR, e.getMessage());
   }
 

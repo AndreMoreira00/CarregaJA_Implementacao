@@ -46,7 +46,6 @@ public class TrocarSenhaBean implements Serializable {
       usuarioLogado.senhaTrocada();
       return "/index.xhtml?faces-redirect=true";
     } catch (ApiException e) {
-      System.out.println("TrocarSenha: " + e.getMessage());
       avisar(e.getMessage());
       return null;
     }

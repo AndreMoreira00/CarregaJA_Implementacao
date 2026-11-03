@@ -61,7 +61,6 @@ public class PrimeiroSindicoService implements ApplicationRunner {
       sindico.getPerfis().add(Perfil.MORADOR);
     }
     usuarioRepository.save(sindico);
-    log.info("Primeiro síndico criado: {}", sindico.getEmail());
   }
 
   // Usado quando o síndico também mora no condomínio e fica com os dois perfis (HU-01, teste 04)
