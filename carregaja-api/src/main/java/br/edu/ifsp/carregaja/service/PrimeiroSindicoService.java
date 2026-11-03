@@ -6,8 +6,10 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import br.edu.ifsp.carregaja.model.Apartamento;
 import br.edu.ifsp.carregaja.model.Perfil;
 import br.edu.ifsp.carregaja.model.Usuario;
+import br.edu.ifsp.carregaja.repository.ApartamentoRepository;
 import br.edu.ifsp.carregaja.repository.UsuarioRepository;
 
 import lombok.extern.slf4j.Slf4j;
@@ -18,20 +20,26 @@ import lombok.extern.slf4j.Slf4j;
 public class PrimeiroSindicoService implements ApplicationRunner {
 
   private final UsuarioRepository usuarioRepository;
+  private final ApartamentoRepository apartamentoRepository;
   private final PasswordEncoder passwordEncoder;
   private final String nome;
   private final String email;
   private final String senha;
+  private final String apartamento;
 
-  public PrimeiroSindicoService(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder,
+  public PrimeiroSindicoService(UsuarioRepository usuarioRepository, ApartamentoRepository apartamentoRepository,
+      PasswordEncoder passwordEncoder,
       @Value("${carregaja.sindico.nome}") String nome,
       @Value("${carregaja.sindico.email}") String email,
-      @Value("${carregaja.sindico.senha}") String senha) {
+      @Value("${carregaja.sindico.senha}") String senha,
+      @Value("${carregaja.sindico.apartamento}") String apartamento) {
     this.usuarioRepository = usuarioRepository;
+    this.apartamentoRepository = apartamentoRepository;
     this.passwordEncoder = passwordEncoder;
     this.nome = nome;
     this.email = email;
     this.senha = senha;
+    this.apartamento = apartamento;
   }
 
   @Override
@@ -48,7 +56,20 @@ public class PrimeiroSindicoService implements ApplicationRunner {
     sindico.setEmail(AutenticacaoService.normalizarEmail(email));
     sindico.setSenha(passwordEncoder.encode(senha));
     sindico.getPerfis().add(Perfil.SINDICO);
+    if (!apartamento.isBlank()) {
+      sindico.setApartamento(buscarOuCriarApartamento());
+      sindico.getPerfis().add(Perfil.MORADOR);
+    }
     usuarioRepository.save(sindico);
     log.info("Primeiro síndico criado: {}", sindico.getEmail());
+  }
+
+  // HU-01, teste 04: o síndico que também mora no condomínio tem os dois perfis
+  private Apartamento buscarOuCriarApartamento() {
+    return apartamentoRepository.findByNumero(apartamento.trim()).orElseGet(() -> {
+      Apartamento novo = new Apartamento();
+      novo.setNumero(apartamento.trim());
+      return apartamentoRepository.save(novo);
+    });
   }
 }

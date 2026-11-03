@@ -45,6 +45,7 @@ A API lê a configuração de variáveis de ambiente, para nenhuma senha ficar n
 | `CARREGAJA_SINDICO_EMAIL` | E-mail do primeiro síndico, criado só se ainda não houver nenhum |
 | `CARREGAJA_SINDICO_SENHA` | Senha provisória dele, trocada no primeiro acesso |
 | `CARREGAJA_SINDICO_NOME` | Nome dele (opcional) |
+| `CARREGAJA_SINDICO_APARTAMENTO` | Apartamento dele (opcional). Com apartamento, ele também é morador e pode cadastrar veículo |
 
 ```bash
 export MYSQL_SENHA=sua_senha                                      # Git Bash / Linux
@@ -114,11 +115,9 @@ Nenhum deles precisa de banco.
 
 ## O que já está implementado
 
-Por enquanto, as telas prontas são a de login (UC01), com a troca de senha, e a do veículo (UC05). Os demais
-casos de uso estão prontos na API e são usados pelas rotas acima. As telas deles estão guardadas na branch `telas-sprint-5`
-do fork [R1ck-dev/CarregaJA_Implementacao](https://github.com/R1ck-dev/CarregaJA_Implementacao/tree/telas-sprint-5).
+Por enquanto, o sistema tem o UC01 e o UC05, cada um com a API e a tela. Os demais casos de uso entram depois.
 
 | Caso de uso | Situação |
 |---|---|
-| UC01 — Autenticar Usuário | Login por e-mail e senha, perfis Morador e Síndico, troca obrigatória da senha provisória e proteção da API por token |
+| UC01 — Autenticar Usuário | Login por e-mail e senha, perfis Morador e Síndico, troca obrigatória da senha provisória e proteção da API por token. O primeiro síndico vem da configuração, porque o cadastro de moradores ainda não entrou |
 | UC05 — Manter Veículo | Cadastrar e alterar o veículo do morador (modelo, capacidade da bateria em kWh, potência máxima em kW) |
