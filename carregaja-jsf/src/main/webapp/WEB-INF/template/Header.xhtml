@@ -5,9 +5,9 @@
 
   <h:form id="frmMenu" rendered="#{usuarioLogado.logado}">
     <p:menubar styleClass="menubar">
-      <p:menuitem value="Início" outcome="/index.xhtml" />
+      <p:menuitem value="Início" outcome="/index.xhtml" rendered="#{!usuarioLogado.trocarSenha}" />
       <p:menuitem value="Meu veículo" outcome="/restricted/manterveiculo/ManterVeiculoView.xhtml"
-        rendered="#{usuarioLogado.morador}" />
+        rendered="#{usuarioLogado.morador and !usuarioLogado.trocarSenha}" />
       <p:menuitem value="Sair" action="#{autenticarUsuarioBean.sair}" ajax="false" />
     </p:menubar>
   </h:form>
