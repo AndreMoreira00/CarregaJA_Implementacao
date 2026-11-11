@@ -1,0 +1,47 @@
+<ui:composition template="/WEB-INF/template/LayoutPadrao.xhtml"
+  xmlns:h="http://xmlns.jcp.org/jsf/html"
+  xmlns:f="http://xmlns.jcp.org/jsf/core"
+  xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+  xmlns:p="http://primefaces.org/ui">
+
+  <ui:define name="corpo">
+
+    <h1>Trocar a senha</h1>
+
+    <p>Sua senha é provisória. Troque-a para continuar.</p>
+
+    <h:form id="frmSenha">
+      <p:messages id="messages" showDetail="false" closable="true">
+        <p:autoUpdate />
+      </p:messages>
+
+      <p:panelGrid id="senhaGrid" columns="2" layout="grid"
+        columnClasses="rotulo, campo">
+
+        <p:outputLabel value="Senha atual" for="atual" />
+        <p:password id="atual" required="true"
+          requiredMessage="Informe a senha atual."
+          value="#{trocarSenhaBean.senhaAtual}" />
+
+        <p:outputLabel value="Nova senha" for="nova" />
+        <p:password id="nova" required="true"
+          requiredMessage="Informe a nova senha."
+          validatorMessage="A nova senha deve ter de 8 a 72 caracteres."
+          value="#{trocarSenhaBean.senhaNova}">
+          <f:validateLength minimum="8" maximum="72" />
+        </p:password>
+
+        <p:outputLabel value="Confirme a nova senha" for="confirmacao" />
+        <p:password id="confirmacao" required="true"
+          requiredMessage="Confirme a nova senha."
+          value="#{trocarSenhaBean.confirmacao}" />
+
+      </p:panelGrid>
+
+      <p:commandButton icon="pi pi-save" id="trocarButton" value="Trocar a senha"
+        style="margin-top: 20px"
+        action="#{trocarSenhaBean.trocar}"
+        process="@this senhaGrid" />
+    </h:form>
+  </ui:define>
+</ui:composition>

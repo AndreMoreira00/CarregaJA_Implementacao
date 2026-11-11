@@ -4,14 +4,17 @@
   xmlns:h="http://xmlns.jcp.org/jsf/html"
   xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
 
-	<ui:define name="corpo">
+  <ui:define name="corpo">
 
-		<h1>CarregaJA</h1>
+    <h1>CarregaJA</h1>
 
-		<p>Controle das vagas com carregador e rateio da energia do condomínio.</p>
+    <p>Olá, #{usuarioLogado.usuario.nome}.
+      <h:outputText rendered="#{usuarioLogado.morador}"
+        value="Apartamento #{usuarioLogado.usuario.apartamento.numero}." />
+    </p>
 
-		<h:link value="Cadastrar ou alterar meu veículo" outcome="/restricted/manterveiculo/ManterVeiculoView.xhtml" />
+    <p>Controle das vagas com carregador e rateio da energia do condomínio.</p>
 
-	</ui:define>
+  </ui:define>
 
 </ui:composition>

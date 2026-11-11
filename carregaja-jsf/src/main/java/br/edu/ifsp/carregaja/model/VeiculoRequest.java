@@ -7,15 +7,15 @@ import lombok.Setter;
 @Setter
 public class VeiculoRequest {
 
-	private String modelo;
-	private Double capacidadeBateria;
-	private Double potenciaMaxima;
+  private String modelo;
+  private Double capacidadeBateria;
+  private Double potenciaMaxima;
 
-	public static VeiculoRequest de(Veiculo veiculo) {
-		VeiculoRequest requisicao = new VeiculoRequest();
-		requisicao.setModelo(veiculo.getModelo());
-		requisicao.setCapacidadeBateria(veiculo.getCapacidadeBateria());
-		requisicao.setPotenciaMaxima(veiculo.getPotenciaMaxima());
-		return requisicao;
-	}
+  public static VeiculoRequest de(Veiculo veiculo) {
+    VeiculoRequest requisicao = new VeiculoRequest();
+    requisicao.setModelo(veiculo.getModelo());
+    requisicao.setCapacidadeBateria(veiculo.getCapacidadeBateria());
+    requisicao.setPotenciaMaxima(veiculo.getPotenciaMaxima());
+    return requisicao;
+  }
 }

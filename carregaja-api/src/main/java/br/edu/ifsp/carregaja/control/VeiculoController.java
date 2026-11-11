@@ -5,6 +5,7 @@ import java.net.URI;
 import javax.validation.Valid;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,13 +15,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import br.edu.ifsp.carregaja.model.Usuario;
 import br.edu.ifsp.carregaja.model.Veiculo;
 import br.edu.ifsp.carregaja.service.VeiculoService;
 import br.edu.ifsp.carregaja.view.VeiculoRequest;
 
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
 @RestController
 @RequestMapping(path = "/veiculos")
 public class VeiculoController {
@@ -32,42 +31,31 @@ public class VeiculoController {
   }
 
   @PostMapping
-  public ResponseEntity<Veiculo> criar(@Valid @RequestBody VeiculoRequest requisicao, UriComponentsBuilder uriBuilder) {
-    log.info("POST /veiculos - cadastrando veículo '{}'", requisicao.getModelo());
-    Veiculo veiculo = veiculoService.criar(requisicao);
+  public ResponseEntity<Veiculo> criar(@AuthenticationPrincipal Usuario usuario,
+      @Valid @RequestBody VeiculoRequest requisicao, UriComponentsBuilder uriBuilder) {
+    Veiculo veiculo = veiculoService.criar(usuario, requisicao);
     URI uri = uriBuilder.path("/veiculos/{id}").buildAndExpand(veiculo.getId()).toUri();
-    log.info("POST /veiculos - veículo cadastrado com id {} -> 201", veiculo.getId());
     return ResponseEntity.created(uri).body(veiculo);
   }
 
   @GetMapping
   public Iterable<Veiculo> listarTodos() {
-    log.info("GET /veiculos - listando os veículos");
     return veiculoService.listarTodos();
   }
 
+  @GetMapping(path = "/meu")
+  public ResponseEntity<Veiculo> buscarMeu(@AuthenticationPrincipal Usuario usuario) {
+    return ResponseEntity.of(veiculoService.buscarDoUsuario(usuario));
+  }
+
   @GetMapping(path = "/{id}")
-  public ResponseEntity<Veiculo> buscarPorId(@PathVariable("id") Long id) {
-    log.info("GET /veiculos/{} - buscando veículo", id);
-    return veiculoService.buscarPorId(id)
-        .map(ResponseEntity::ok)
-        .orElseGet(() -> {
-          log.warn("GET /veiculos/{} - veículo não encontrado -> 404", id);
-          return ResponseEntity.notFound().build();
-        });
+  public ResponseEntity<Veiculo> buscarPorId(@AuthenticationPrincipal Usuario usuario, @PathVariable("id") Long id) {
+    return ResponseEntity.of(veiculoService.buscarPorId(usuario, id));
   }
 
   @PutMapping(path = "/{id}")
-  public ResponseEntity<Veiculo> atualizar(@PathVariable("id") Long id, @Valid @RequestBody VeiculoRequest requisicao) {
-    log.info("PUT /veiculos/{} - alterando veículo", id);
-    return veiculoService.atualizar(id, requisicao)
-        .map(veiculo -> {
-          log.info("PUT /veiculos/{} - veículo alterado para '{}' -> 200", id, veiculo.getModelo());
-          return ResponseEntity.ok(veiculo);
-        })
-        .orElseGet(() -> {
-          log.warn("PUT /veiculos/{} - veículo não encontrado, nada foi alterado -> 404", id);
-          return ResponseEntity.notFound().build();
-        });
+  public ResponseEntity<Veiculo> atualizar(@AuthenticationPrincipal Usuario usuario, @PathVariable("id") Long id,
+      @Valid @RequestBody VeiculoRequest requisicao) {
+    return ResponseEntity.of(veiculoService.atualizar(usuario, id, requisicao));
   }
 }
