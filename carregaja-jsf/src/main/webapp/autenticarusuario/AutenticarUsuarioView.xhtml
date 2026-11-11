@@ -1,0 +1,39 @@
+<ui:composition template="/WEB-INF/template/LayoutPadrao.xhtml"
+  xmlns:h="http://xmlns.jcp.org/jsf/html"
+  xmlns:f="http://xmlns.jcp.org/jsf/core"
+  xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+  xmlns:p="http://primefaces.org/ui">
+
+  <ui:define name="corpo">
+
+    <f:event type="preRenderView" listener="#{autenticarUsuarioBean.inicializar}" />
+
+    <h1>Entrar</h1>
+
+    <h:form id="frmLogin">
+      <p:messages id="messages" showDetail="false" closable="true">
+        <p:autoUpdate />
+      </p:messages>
+
+      <p:panelGrid id="loginGrid" columns="2" layout="grid"
+        columnClasses="rotulo, campo">
+
+        <p:outputLabel value="E-mail" for="email" />
+        <p:inputText id="email" type="email" required="true"
+          requiredMessage="Informe o e-mail."
+          value="#{autenticarUsuarioBean.email}" />
+
+        <p:outputLabel value="Senha" for="senha" />
+        <p:password id="senha" required="true"
+          requiredMessage="Informe a senha."
+          value="#{autenticarUsuarioBean.senha}" />
+
+      </p:panelGrid>
+
+      <p:commandButton icon="pi pi-sign-in" id="entrarButton" value="Entrar"
+        style="margin-top: 20px"
+        action="#{autenticarUsuarioBean.entrar}"
+        process="@this loginGrid" />
+    </h:form>
+  </ui:define>
+</ui:composition>

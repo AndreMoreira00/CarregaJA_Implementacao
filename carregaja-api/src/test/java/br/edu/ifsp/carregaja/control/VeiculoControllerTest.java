@@ -16,21 +16,17 @@ import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
 
+import br.edu.ifsp.carregaja.model.Usuario;
 import br.edu.ifsp.carregaja.model.Veiculo;
 import br.edu.ifsp.carregaja.service.VeiculoService;
 import br.edu.ifsp.carregaja.view.VeiculoRequest;
 
 @WebMvcTest(VeiculoController.class)
-class VeiculoControllerTest {
-
-  @Autowired
-  private MockMvc mvc;
+class VeiculoControllerTest extends ControleTesteBase {
 
   @MockBean
   private VeiculoService veiculoService;
@@ -52,9 +48,9 @@ class VeiculoControllerTest {
   // HU-05, teste 01
   @Test
   void cadastroValidoDevolve201ComOEndereco() throws Exception {
-    when(veiculoService.criar(any(VeiculoRequest.class))).thenReturn(leaf());
+    when(veiculoService.criar(any(Usuario.class), any(VeiculoRequest.class))).thenReturn(leaf());
 
-    mvc.perform(post("/veiculos").contentType(MediaType.APPLICATION_JSON).content(json("Nissan Leaf", 40, 6.6)))
+    mvc.perform(post("/veiculos").with(logado(morador())).contentType(MediaType.APPLICATION_JSON).content(json("Nissan Leaf", 40, 6.6)))
         .andExpect(status().isCreated())
         .andExpect(header().string("Location", "http://localhost/veiculos/1"))
         .andExpect(jsonPath("$.id").value(1))
@@ -65,55 +61,55 @@ class VeiculoControllerTest {
 
   @Test
   void modeloEmBrancoDevolve400() throws Exception {
-    mvc.perform(post("/veiculos").contentType(MediaType.APPLICATION_JSON).content(json("  ", 40, 6.6)))
+    mvc.perform(post("/veiculos").with(logado(morador())).contentType(MediaType.APPLICATION_JSON).content(json("  ", 40, 6.6)))
         .andExpect(status().isBadRequest());
-    verify(veiculoService, never()).criar(any());
+    verify(veiculoService, never()).criar(any(), any());
   }
 
   @Test
   void modeloNuloDevolve400() throws Exception {
-    mvc.perform(post("/veiculos").contentType(MediaType.APPLICATION_JSON).content(json(null, 40, 6.6)))
+    mvc.perform(post("/veiculos").with(logado(morador())).contentType(MediaType.APPLICATION_JSON).content(json(null, 40, 6.6)))
         .andExpect(status().isBadRequest());
-    verify(veiculoService, never()).criar(any());
+    verify(veiculoService, never()).criar(any(), any());
   }
 
   // HU-05, teste 02
   @Test
   void capacidadeZeroDevolve400() throws Exception {
-    mvc.perform(post("/veiculos").contentType(MediaType.APPLICATION_JSON).content(json("Nissan Leaf", 0, 7)))
+    mvc.perform(post("/veiculos").with(logado(morador())).contentType(MediaType.APPLICATION_JSON).content(json("Nissan Leaf", 0, 7)))
         .andExpect(status().isBadRequest());
-    verify(veiculoService, never()).criar(any());
+    verify(veiculoService, never()).criar(any(), any());
   }
 
   @Test
   void capacidadeAusenteDevolve400() throws Exception {
-    mvc.perform(post("/veiculos").contentType(MediaType.APPLICATION_JSON).content(json("Nissan Leaf", null, 7)))
+    mvc.perform(post("/veiculos").with(logado(morador())).contentType(MediaType.APPLICATION_JSON).content(json("Nissan Leaf", null, 7)))
         .andExpect(status().isBadRequest());
-    verify(veiculoService, never()).criar(any());
+    verify(veiculoService, never()).criar(any(), any());
   }
 
   // HU-05, teste 03
   @Test
   void potenciaNegativaDevolve400() throws Exception {
-    mvc.perform(post("/veiculos").contentType(MediaType.APPLICATION_JSON).content(json("Nissan Leaf", 40, -2)))
+    mvc.perform(post("/veiculos").with(logado(morador())).contentType(MediaType.APPLICATION_JSON).content(json("Nissan Leaf", 40, -2)))
         .andExpect(status().isBadRequest());
-    verify(veiculoService, never()).criar(any());
+    verify(veiculoService, never()).criar(any(), any());
   }
 
   @Test
   void listarDevolveOsVeiculos() throws Exception {
     when(veiculoService.listarTodos()).thenReturn(List.of(leaf()));
 
-    mvc.perform(get("/veiculos"))
+    mvc.perform(get("/veiculos").with(logado(sindico())))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$[0].modelo").value("Nissan Leaf"));
   }
 
   @Test
   void buscarInexistenteDevolve404() throws Exception {
-    when(veiculoService.buscarPorId(99L)).thenReturn(Optional.empty());
+    when(veiculoService.buscarPorId(any(Usuario.class), eq(99L))).thenReturn(Optional.empty());
 
-    mvc.perform(get("/veiculos/99"))
+    mvc.perform(get("/veiculos/99").with(logado(morador())))
         .andExpect(status().isNotFound());
   }
 
@@ -121,25 +117,43 @@ class VeiculoControllerTest {
   void alterarDevolve200ComOsNovosDados() throws Exception {
     Veiculo alterado = leaf();
     alterado.setCapacidadeBateria(60.0);
-    when(veiculoService.atualizar(eq(1L), any(VeiculoRequest.class))).thenReturn(Optional.of(alterado));
+    when(veiculoService.atualizar(any(Usuario.class), eq(1L), any(VeiculoRequest.class))).thenReturn(Optional.of(alterado));
 
-    mvc.perform(put("/veiculos/1").contentType(MediaType.APPLICATION_JSON).content(json("Nissan Leaf", 60, 6.6)))
+    mvc.perform(put("/veiculos/1").with(logado(morador())).contentType(MediaType.APPLICATION_JSON).content(json("Nissan Leaf", 60, 6.6)))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.capacidadeBateria").value(60.0));
   }
 
   @Test
   void alterarInexistenteDevolve404() throws Exception {
-    when(veiculoService.atualizar(eq(99L), any(VeiculoRequest.class))).thenReturn(Optional.empty());
+    when(veiculoService.atualizar(any(Usuario.class), eq(99L), any(VeiculoRequest.class))).thenReturn(Optional.empty());
 
-    mvc.perform(put("/veiculos/99").contentType(MediaType.APPLICATION_JSON).content(json("Nissan Leaf", 40, 6.6)))
+    mvc.perform(put("/veiculos/99").with(logado(morador())).contentType(MediaType.APPLICATION_JSON).content(json("Nissan Leaf", 40, 6.6)))
         .andExpect(status().isNotFound());
   }
 
   @Test
   void alterarComPotenciaZeroDevolve400() throws Exception {
-    mvc.perform(put("/veiculos/1").contentType(MediaType.APPLICATION_JSON).content(json("Nissan Leaf", 40, 0)))
+    mvc.perform(put("/veiculos/1").with(logado(morador())).contentType(MediaType.APPLICATION_JSON).content(json("Nissan Leaf", 40, 0)))
         .andExpect(status().isBadRequest());
-    verify(veiculoService, never()).atualizar(any(), any());
+    verify(veiculoService, never()).atualizar(any(), any(), any());
+  }
+
+  // HU-05, teste 01. O veículo é buscado pelo morador do token, sem informar o dono na requisição
+  @Test
+  void buscarOMeuDevolveOVeiculoDoMorador() throws Exception {
+    when(veiculoService.buscarDoUsuario(any(Usuario.class))).thenReturn(Optional.of(leaf()));
+
+    mvc.perform(get("/veiculos/meu").with(logado(morador())))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.modelo").value("Nissan Leaf"))
+        .andExpect(jsonPath("$.usuario").doesNotExist());
+  }
+
+  @Test
+  void moradorSemVeiculoDevolve404() throws Exception {
+    when(veiculoService.buscarDoUsuario(any(Usuario.class))).thenReturn(Optional.empty());
+
+    mvc.perform(get("/veiculos/meu").with(logado(morador()))).andExpect(status().isNotFound());
   }
 }

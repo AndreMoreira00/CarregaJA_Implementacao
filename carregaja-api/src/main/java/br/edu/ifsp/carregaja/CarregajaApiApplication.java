@@ -8,13 +8,13 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 @SpringBootApplication
 public class CarregajaApiApplication extends SpringBootServletInitializer {
 
-	@Override
-	protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
-		return builder.sources(CarregajaApiApplication.class);
-	}
+  @Override
+  protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
+    return builder.sources(CarregajaApiApplication.class);
+  }
 
-	public static void main(String[] args) {
-		SpringApplication.run(CarregajaApiApplication.class, args);
-	}
+  public static void main(String[] args) {
+    SpringApplication.run(CarregajaApiApplication.class, args);
+  }
 
 }
