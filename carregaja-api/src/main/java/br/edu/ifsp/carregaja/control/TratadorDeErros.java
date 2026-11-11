@@ -7,6 +7,7 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import br.edu.ifsp.carregaja.service.RegraNegocioException;
 import br.edu.ifsp.carregaja.view.ErroResponse;
@@ -32,6 +33,13 @@ public class TratadorDeErros {
         .orElse("Dados inválidos.");
     log.warn("Dados inválidos -> 400: {}", mensagem);
     return ResponseEntity.badRequest().body(new ErroResponse(mensagem));
+  }
+
+  // Parâmetro da URL com formato inválido, como uma data fora de aaaa-mm-dd
+  @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+  public ResponseEntity<ErroResponse> parametroInvalido(MethodArgumentTypeMismatchException erro) {
+    log.warn("Parâmetro '{}' inválido -> 400", erro.getName());
+    return ResponseEntity.badRequest().body(new ErroResponse("O parâmetro '" + erro.getName() + "' é inválido."));
   }
 
   // Dois pedidos simultâneos passam pela verificação do serviço, mas só um passa pela restrição do banco

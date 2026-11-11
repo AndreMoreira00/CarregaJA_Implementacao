@@ -98,6 +98,7 @@ curl -X POST http://localhost:8081/autenticacao -H "Content-Type: application/js
 
 | `POST` | `/sessoes` | Morador | Inicia a recarga (`vagaId`, `nivelBateria`) e devolve a previsão | 201 · 400 · 404 · 409 vaga ocupada ou desativada, ou sessão já aberta · 422 sem veículo ou bateria cheia |
 | `GET` | `/sessoes/minha` | Morador | Sessão aberta do morador | 200 · 404 |
+| `GET` | `/historico?de=&ate=` | Síndico | Histórico de utilização do período (`de` e `ate`, aaaa-mm-dd, e os filtros `vagaId` e `apartamentoId`): ocupação por vaga, faixa de pico, consumo por apartamento e recusas | 200 · 400 |
 
 Corpo do `POST` e do `PUT` de veículo:
 
@@ -150,3 +151,4 @@ do fork [R1ck-dev/CarregaJA_Implementacao](https://github.com/R1ck-dev/CarregaJA
 | UC08 — Definir Tarifa de Energia | Cadastrar a tarifa do kWh, vigente da data e hora do cadastro até a próxima, com o histórico consultável |
 | UC03 — Manter Sessão de Recarga (início e previsão) | Iniciar a sessão com a potência efetiva e a previsão de conclusão, com as recusas de vaga ocupada ou desativada, sessão já aberta e morador sem veículo. O encerramento entra no sprint 6 |
 | UC04 — Apurar Energia da Sessão | Regra isolada em `ApuracaoEnergiaService`, coberta por testes de unidade. Passa a ser chamada com o encerramento, no sprint 6 |
+| UC12 — Consultar Histórico de Utilização | Ocupação por vaga (horas e % do período), faixa horária de pico, consumo por apartamento e recusas por vaga e por faixa, só para o síndico. Só lê o que o UC03 e o UC04 gravaram: o consumo só aparece depois que o encerramento (sprint 6) apurar as sessões |
