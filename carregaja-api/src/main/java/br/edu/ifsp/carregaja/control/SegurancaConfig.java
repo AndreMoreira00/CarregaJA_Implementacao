@@ -40,6 +40,13 @@ public class SegurancaConfig {
         .authorizeHttpRequests(regras -> regras
             .antMatchers(HttpMethod.POST, "/autenticacao").permitAll()
             .antMatchers(HttpMethod.PUT, "/autenticacao/senha").authenticated()
+            .antMatchers("/usuarios/**").hasRole(SINDICO)
+            .antMatchers(HttpMethod.POST, "/vagas/**").hasRole(SINDICO)
+            .antMatchers(HttpMethod.PUT, "/vagas/**").hasRole(SINDICO)
+            .antMatchers(HttpMethod.DELETE, "/vagas/**").hasRole(SINDICO)
+            .antMatchers(HttpMethod.GET, "/tarifas").hasRole(SINDICO)
+            .antMatchers(HttpMethod.POST, "/tarifas").hasRole(SINDICO)
+            .antMatchers("/sessoes/**").hasRole(MORADOR)
             .antMatchers(HttpMethod.GET, "/veiculos").hasRole(SINDICO)
             .antMatchers(HttpMethod.GET, "/veiculos/meu").hasRole(MORADOR)
             .antMatchers(HttpMethod.POST, "/veiculos").hasRole(MORADOR)

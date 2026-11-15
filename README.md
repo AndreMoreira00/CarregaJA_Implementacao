@@ -113,6 +113,29 @@ curl -X POST http://localhost:8081/autenticacao -H "Content-Type: application/js
 | `POST` | `/veiculos` | Morador | Cadastra o próprio veículo | 201 com `Location` · 400 · 409 se já tem |
 | `PUT` | `/veiculos/{id}` | Dono | Altera | 200 · 400 · 403 · 404 |
 
+| `GET` | `/usuarios` | Síndico | Lista moradores e síndicos | 200 |
+| `GET` | `/usuarios/{id}` | Síndico | Busca um usuário | 200 · 404 |
+| `POST` | `/usuarios` | Síndico | Cadastra, com senha provisória | 201 com `Location` · 400 · 409 e-mail repetido |
+| `PUT` | `/usuarios/{id}` | Síndico | Altera; com `senhaProvisoria`, redefine a senha | 200 · 400 · 404 · 409 |
+| `POST` | `/usuarios/{id}/desativar` | Síndico | Revoga o acesso e mantém o histórico | 200 · 404 · 409 se é o único síndico |
+| `POST` | `/usuarios/{id}/reativar` | Síndico | Devolve o acesso | 200 · 404 |
+| `DELETE` | `/usuarios/{id}` | Síndico | Remove | 204 · 404 · 409 |
+
+| `GET` | `/vagas` | Logado | Lista as vagas | 200 |
+| `GET` | `/vagas/{id}` | Logado | Busca uma vaga | 200 · 404 |
+| `POST` | `/vagas` | Síndico | Cadastra (`identificacao`, `potenciaCarregador`) | 201 com `Location` · 400 · 409 código repetido |
+| `PUT` | `/vagas/{id}` | Síndico | Altera | 200 · 400 · 404 · 409 |
+| `POST` | `/vagas/{id}/desativar` | Síndico | Deixa de aceitar sessões | 200 · 404 |
+| `POST` | `/vagas/{id}/reativar` | Síndico | Volta a aceitar sessões | 200 · 404 |
+| `DELETE` | `/vagas/{id}` | Síndico | Remove | 204 · 404 · 409 |
+
+| `GET` | `/tarifas` | Síndico | Lista as tarifas, da mais nova à mais antiga | 200 |
+| `GET` | `/tarifas/vigente` | Logado | Tarifa que vale agora | 200 · 404 se não há nenhuma |
+| `POST` | `/tarifas` | Síndico | Cadastra (`valorKwh`), vigente a partir de agora | 201 · 400 |
+
+| `POST` | `/sessoes` | Morador | Inicia a recarga (`vagaId`, `nivelBateria`) e devolve a previsão | 201 · 400 · 404 · 409 vaga ocupada ou desativada, ou sessão já aberta · 422 sem veículo ou bateria cheia |
+| `GET` | `/sessoes/minha` | Morador | Sessão aberta do morador | 200 · 404 |
+
 Corpo do `POST` e do `PUT` de veículo:
 
 ```json
@@ -157,3 +180,8 @@ Por enquanto, o sistema tem o UC01 e o UC05, cada um com a API e a tela. Os dema
 |---|---|
 | UC01 — Autenticar Usuário | Login por e-mail e senha, perfis Morador e Síndico, troca obrigatória da senha provisória e proteção da API por token. O primeiro síndico vem da configuração, porque o cadastro de moradores ainda não entrou |
 | UC05 — Manter Veículo | Cadastrar e alterar o veículo do morador (modelo, capacidade da bateria em kWh, potência máxima em kW) |
+| UC09 — Manter Moradores | Cadastrar, alterar, desativar e remover moradores, vinculados ao apartamento, com senha provisória |
+| UC07 — Manter Vagas com Carregador | Cadastrar, alterar, desativar e remover as vagas e a potência do carregador de cada uma |
+| UC08 — Definir Tarifa de Energia | Cadastrar a tarifa do kWh, vigente da data e hora do cadastro até a próxima, com o histórico consultável |
+| UC03 — Manter Sessão de Recarga (início e previsão) | Iniciar a sessão com a potência efetiva e a previsão de conclusão, com as recusas de vaga ocupada ou desativada, sessão já aberta e morador sem veículo. O encerramento entra no sprint 6 |
+| UC04 — Apurar Energia da Sessão | Regra isolada em `ApuracaoEnergiaService`, coberta por testes de unidade. Passa a ser chamada com o encerramento, no sprint 6 |
