@@ -1,5 +1,7 @@
 package br.edu.ifsp.carregaja.repository;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.repository.CrudRepository;
@@ -16,4 +18,9 @@ public interface SessaoRecargaRepository extends CrudRepository<SessaoRecarga, L
   boolean existsByVagaId(Long vagaId);
 
   boolean existsByUsuarioId(Long usuarioId);
+
+  List<SessaoRecarga> findByInicioGreaterThanEqualAndInicioLessThan(LocalDateTime de, LocalDateTime ate);
+
+  List<SessaoRecarga> findByUsuarioApartamentoIdAndInicioGreaterThanEqualAndInicioLessThanOrderByInicio(
+      Long apartamentoId, LocalDateTime de, LocalDateTime ate);
 }
