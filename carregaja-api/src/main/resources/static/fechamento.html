@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Fechamento do mês · CarregaJA</title>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="/css/carregaja.css">
+</head>
+<body>
+<header id="topo" class="topo"></header>
+<main id="conteudo" class="conteudo">
+<h1 class="pagina-titulo">Fechamento do mês</h1>
+<p class="subtitulo">Consolida a energia e o valor por apartamento. A cobrança é lançada pela administradora: exporte o rateio para repassar.</p>
+<div id="aviso" role="status" aria-live="polite"></div>
+
+<section class="cartao">
+  <h2>Fechar um mês</h2>
+  <div class="seletor-mes">
+    <button type="button" class="botao secundario" id="anterior" aria-label="Mês anterior">‹</button>
+    <div class="mes" id="mes" aria-live="polite"></div>
+    <button type="button" class="botao secundario" id="proximo" aria-label="Próximo mês">›</button>
+  </div>
+  <p class="nota">Só fecha mês que já terminou e sem sessão aberta. Depois de fechado, o mês não é recalculado.</p>
+  <button type="button" id="fechar" class="botao">Fechar o mês</button>
+</section>
+<section id="resultado" class="secao"></section>
+<section class="secao"><h2>Meses fechados</h2><ul id="lista" class="lista"></ul></section>
+
+</main>
+<script type="module" src="/js/fechamento.js"></script>
+</body>
+</html>

@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Moradores · CarregaJA</title>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="/css/carregaja.css">
+</head>
+<body>
+<header id="topo" class="topo"></header>
+<main id="conteudo" class="conteudo">
+<h1 class="pagina-titulo">Moradores</h1>
+<p class="subtitulo">Cada morador fica ligado a um apartamento, que é a unidade do rateio. A senha provisória é trocada no primeiro acesso.</p>
+<div id="aviso" role="status" aria-live="polite"></div>
+
+<p><button type="button" id="abrir" class="botao">Novo morador</button></p>
+<section id="formulario-cartao" class="cartao" hidden>
+  <h2 id="formulario-titulo">Novo morador</h2>
+  <form id="formulario" novalidate>
+    <div class="grade-campos">
+      <label class="campo"><span>Nome</span><input id="nome" type="text" maxlength="100" autocomplete="off"></label>
+      <label class="campo"><span>E-mail</span><input id="email" type="email" maxlength="100" autocomplete="off" inputmode="email"></label>
+      <label class="campo"><span>Apartamento</span><input id="apartamento" type="text" maxlength="10" autocomplete="off" placeholder="42"></label>
+      <label class="campo"><span id="senha-rotulo">Senha provisória</span><input id="senha" type="text" maxlength="72" autocomplete="off">
+        <small id="senha-dica">De 8 a 72 caracteres. A pessoa troca no primeiro acesso.</small></label>
+    </div>
+    <label class="marcar"><input id="sindico" type="checkbox"><span>É síndico (ou preposto da administradora, que pode não ter apartamento)</span></label>
+    <div class="acoes"><button class="botao" type="submit" id="salvar">Cadastrar</button><button class="botao secundario" type="button" id="cancelar">Cancelar</button></div>
+  </form>
+</section>
+<section class="secao"><h2>Cadastrados</h2><ul id="lista" class="lista"></ul></section>
+
+</main>
+<script type="module" src="/js/moradores.js"></script>
+</body>
+</html>

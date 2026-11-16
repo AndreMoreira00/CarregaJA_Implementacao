@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Histórico de utilização · CarregaJA</title>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="/css/carregaja.css">
+</head>
+<body>
+<header id="topo" class="topo"></header>
+<main id="conteudo" class="conteudo">
+<h1 class="pagina-titulo">Histórico</h1>
+<p class="subtitulo">Como a garagem foi usada no período: ocupação, horário de pico, recusas por falta de vaga e consumo por apartamento.</p>
+<div id="aviso" role="status" aria-live="polite"></div>
+
+<form id="filtros" class="cartao" novalidate>
+  <div class="grade-campos">
+    <label class="campo"><span>De</span><input id="de" type="date"></label>
+    <label class="campo"><span>Até</span><input id="ate" type="date"></label>
+    <label class="campo"><span>Vaga</span><select id="vaga"><option value="">Todas</option></select></label>
+    <label class="campo"><span>Apartamento</span><select id="apartamento"><option value="">Todos</option></select></label>
+  </div>
+  <button class="botao" type="submit">Consultar</button>
+</form>
+<div id="resultado"></div>
+
+</main>
+<script type="module" src="/js/historico.js"></script>
+</body>
+</html>

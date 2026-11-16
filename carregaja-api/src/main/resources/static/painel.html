@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Painel de vagas · CarregaJA</title>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="/css/carregaja.css">
+</head>
+<body>
+<header id="topo" class="topo"></header>
+<main id="conteudo" class="conteudo">
+<h1 class="pagina-titulo">Painel de vagas</h1>
+<p class="subtitulo">A situação de cada vaga com carregador agora. Uso por ordem de chegada: ocupe uma vaga livre e registre a recarga.</p>
+<div id="aviso" role="status" aria-live="polite"></div>
+
+<section id="resumo" class="resumo"></section>
+<section id="vagas" class="grade-vagas" aria-label="Vagas"></section>
+<p class="nota" style="margin-top:18px"><span id="atualizado"></span>
+<button type="button" id="atualizar" class="botao secundario pequeno" style="margin-left:8px">Atualizar agora</button></p>
+
+</main>
+<script type="module" src="/js/painel.js"></script>
+</body>
+</html>

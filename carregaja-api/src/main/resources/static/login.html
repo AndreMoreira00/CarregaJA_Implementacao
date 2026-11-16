@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Entrar · CarregaJA</title>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="/css/carregaja.css">
+</head>
+<body>
+<div class="faixa-topo"></div>
+<main class="entrada">
+  <div class="marca"><svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#F5C400"/><path d="M18 4 8 18h7l-1.5 10L24 14h-7z" fill="#1B1D1F"/></svg><span>CarregaJA</span></div>
+  <p class="lema">Vaga com carregador para quem tem veículo elétrico e conta justa para todo o condomínio.</p>
+  <form id="formulario" class="cartao" novalidate>
+    <h2>Entrar</h2>
+    <div id="aviso" role="status" aria-live="polite"></div>
+    <label class="campo"><span>E-mail</span><input id="email" type="email" autocomplete="username" inputmode="email" autofocus></label>
+    <label class="campo"><span>Senha</span><input id="senha" type="password" autocomplete="current-password"></label>
+    <button class="botao bloco" type="submit">Entrar</button>
+  </form>
+  <p class="nota">Primeiro acesso? Use a senha provisória que o síndico passou. Você troca por uma sua em seguida.</p>
+</main>
+<script type="module" src="/js/login.js"></script>
+</body>
+</html>

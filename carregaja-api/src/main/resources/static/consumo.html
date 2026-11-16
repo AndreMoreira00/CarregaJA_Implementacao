@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Consumo do mês · CarregaJA</title>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="/css/carregaja.css">
+</head>
+<body>
+<header id="topo" class="topo"></header>
+<main id="conteudo" class="conteudo">
+<h1 class="pagina-titulo">Consumo do mês</h1>
+<p class="subtitulo">O que o seu apartamento consumiu, sessão a sessão. O valor de cada uma usa a tarifa do início dela.</p>
+<div id="aviso" role="status" aria-live="polite"></div>
+
+<div class="seletor-mes">
+  <button type="button" class="botao secundario" id="anterior" aria-label="Mês anterior">‹</button>
+  <div class="mes" id="mes" aria-live="polite"></div>
+  <button type="button" class="botao secundario" id="proximo" aria-label="Próximo mês">›</button>
+</div>
+<div id="area"><p class="carregando">Carregando…</p></div>
+
+</main>
+<script type="module" src="/js/consumo.js"></script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Tarifa · CarregaJA</title>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="/css/carregaja.css">
+</head>
+<body>
+<header id="topo" class="topo"></header>
+<main id="conteudo" class="conteudo">
+<h1 class="pagina-titulo">Tarifa do kWh</h1>
+<p class="subtitulo">A tarifa nova vale a partir do momento do cadastro. A sessão que já começou segue a tarifa do início dela.</p>
+<div id="aviso" role="status" aria-live="polite"></div>
+
+<section id="vigente" class="cartao"></section>
+<section class="secao">
+  <h2>Nova tarifa</h2>
+  <form id="nova" class="cartao" novalidate>
+    <label class="campo"><span>Valor do kWh (R$)</span><input id="valor" type="number" inputmode="decimal" step="any" min="0" placeholder="0,92">
+      <small>Até 4 casas decimais. Não é possível definir data: vale de agora em diante.</small></label>
+    <button class="botao" type="submit">Cadastrar tarifa</button>
+  </form>
+</section>
+<section class="secao"><h2>Histórico de tarifas</h2><ul id="lista" class="lista"></ul></section>
+
+</main>
+<script type="module" src="/js/tarifa.js"></script>
+</body>
+</html>
