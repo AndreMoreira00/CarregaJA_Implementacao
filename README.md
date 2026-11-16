@@ -53,7 +53,7 @@ confere a própria resposta. Os demais cenários estão nos testes de unidade (`
 
 1. Rode `scripts\zerar-banco.bat`: a coleção começa pelo primeiro acesso da síndica.
 2. No Postman, execute a coleção inteira, de cima para baixo (*Run collection*). Os tokens e os ids ficam nas
-   variáveis da coleção. São 26 requisições e 49 verificações.
+   variáveis da coleção. São 60 requisições e 134 verificações.
 3. Depois disso, qualquer requisição pode ser repetida à mão. Para executar a coleção inteira de novo, zere o banco.
 
 A síndica usa os dados de `scripts/config.bat`; se você os mudou, ajuste as variáveis `emailSindica` e
@@ -135,6 +135,7 @@ curl -X POST http://localhost:8081/autenticacao -H "Content-Type: application/js
 
 | `POST` | `/sessoes` | Morador | Inicia a recarga (`vagaId`, `nivelBateria`) e devolve a previsão | 201 · 400 · 404 · 409 vaga ocupada ou desativada, ou sessão já aberta · 422 sem veículo ou bateria cheia |
 | `GET` | `/sessoes/minha` | Morador | Sessão aberta do morador | 200 · 404 |
+| `GET` | `/painel` | Logado | Situação de cada vaga e previsão de liberação das ocupadas; só o síndico recebe o apartamento e o nome de quem ocupa | 200 |
 
 Corpo do `POST` e do `PUT` de veículo:
 
@@ -185,3 +186,4 @@ Por enquanto, o sistema tem o UC01 e o UC05, cada um com a API e a tela. Os dema
 | UC08 — Definir Tarifa de Energia | Cadastrar a tarifa do kWh, vigente da data e hora do cadastro até a próxima, com o histórico consultável |
 | UC03 — Manter Sessão de Recarga (início e previsão) | Iniciar a sessão com a potência efetiva e a previsão de conclusão, com as recusas de vaga ocupada ou desativada, sessão já aberta e morador sem veículo. O encerramento entra no sprint 6 |
 | UC04 — Apurar Energia da Sessão | Regra isolada em `ApuracaoEnergiaService`, coberta por testes de unidade. Passa a ser chamada com o encerramento, no sprint 6 |
+| UC02 — Consultar Painel de Vagas | Situação de cada vaga (livre, ocupada, concluída e ainda ocupada, excedida), previsão de liberação e, sem vaga livre, a liberação mais próxima. Só a API |
