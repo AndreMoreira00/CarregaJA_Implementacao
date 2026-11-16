@@ -13,6 +13,9 @@ public interface SessaoRecargaRepository extends CrudRepository<SessaoRecarga, L
 
   Optional<SessaoRecarga> findByUsuarioIdAndSituacao(Long usuarioId, SituacaoSessao situacao);
 
+  // UC02: todas as sessões abertas de uma vez, para montar o painel
+  Iterable<SessaoRecarga> findBySituacao(SituacaoSessao situacao);
+
   boolean existsByVagaId(Long vagaId);
 
   boolean existsByUsuarioId(Long usuarioId);
