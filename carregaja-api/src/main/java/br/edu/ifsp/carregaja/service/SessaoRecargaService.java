@@ -4,6 +4,9 @@ import java.time.Clock;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -24,6 +27,7 @@ import br.edu.ifsp.carregaja.repository.SessaoRecargaRepository;
 import br.edu.ifsp.carregaja.repository.UsuarioRepository;
 import br.edu.ifsp.carregaja.repository.VagaRepository;
 import br.edu.ifsp.carregaja.repository.VeiculoRepository;
+import br.edu.ifsp.carregaja.view.SessaoAbertaResponse;
 import br.edu.ifsp.carregaja.view.SessaoRequest;
 import br.edu.ifsp.carregaja.view.SessaoResponse;
 
@@ -84,6 +88,59 @@ public class SessaoRecargaService {
         .orElseThrow(() -> recusa(HttpStatus.CONFLICT, "Ainda não há tarifa cadastrada. Procure o síndico."));
 
     return responder(sessaoRepository.save(montar(morador, vaga, veiculo, tarifa, requisicao.getNivelBateria(), agora)));
+  }
+
+  // UC03, encerramento (RF-07): o morador encerra a própria sessão, que é apurada na hora (UC04). Se o síndico a
+  // encerrou no mesmo instante, a consulta com trava espera por ele e já não a encontra aberta
+  @Transactional(isolation = Isolation.READ_COMMITTED)
+  public SessaoResponse encerrar(Usuario usuario) {
+    SessaoRecarga sessao = sessaoRepository.findComTravaByUsuarioIdAndSituacao(usuario.getId(), SituacaoSessao.EM_ANDAMENTO)
+        .orElseThrow(() -> recusa(HttpStatus.NOT_FOUND, "Você não tem sessão de recarga aberta para encerrar."));
+    LocalDateTime agora = LocalDateTime.now(relogio);
+
+    apuracao.apurar(sessao, agora);
+    sessao.setSituacao(SituacaoSessao.ENCERRADA);
+    return responder(sessaoRepository.save(sessao));
+  }
+
+  // UC10: as sessões abertas, as mais antigas primeiro, para o síndico achar a que ficou para trás
+  public List<SessaoAbertaResponse> listarAbertas() {
+    LocalDateTime agora = LocalDateTime.now(relogio);
+    List<SessaoAbertaResponse> abertas = new ArrayList<>();
+    for (SessaoRecarga sessao : sessaoRepository.findBySituacao(SituacaoSessao.EM_ANDAMENTO)) {
+      abertas.add(new SessaoAbertaResponse(sessao, apuracao.estado(sessao, agora, duracaoMaxima)));
+    }
+    abertas.sort(Comparator.comparing(SessaoAbertaResponse::getInicio));
+    return abertas;
+  }
+
+  // UC10 (RF-15, RN-07): o síndico só encerra a sessão que passou da previsão, depois de ver na garagem que o
+  // veículo saiu. O sistema não sabe se o veículo está na vaga (RE-05): a confirmação é dele, e fica registrada
+  @Transactional(isolation = Isolation.READ_COMMITTED)
+  public SessaoResponse encerrarAdministrativamente(Long id, Usuario sindico) {
+    SessaoRecarga sessao = travarAberta(id);
+    LocalDateTime agora = LocalDateTime.now(relogio);
+    if (!agora.isAfter(sessao.getPrevisaoConclusao())) {
+      throw recusa(HttpStatus.CONFLICT, "A sessão da vaga " + sessao.getVaga().getIdentificacao()
+          + " ainda está dentro da previsão de conclusão (" + sessao.getPrevisaoConclusao().format(HORA)
+          + "). Só o morador pode encerrá-la antes disso.");
+    }
+
+    apuracao.apurar(sessao, agora);
+    sessao.setSituacao(SituacaoSessao.ENCERRADA_ADMINISTRATIVAMENTE);
+    sessao.setEncerradaPor(sindico);
+    return responder(sessaoRepository.save(sessao));
+  }
+
+  // A trava faz o segundo de dois encerramentos simultâneos esperar o primeiro e encontrar a sessão já encerrada.
+  // Nada pode ler a sessão antes nesta transação, senão o Hibernate devolve a cópia antiga (ver o repositório)
+  private SessaoRecarga travarAberta(Long id) {
+    SessaoRecarga sessao = sessaoRepository.findComTravaById(id)
+        .orElseThrow(() -> recusa(HttpStatus.NOT_FOUND, "Sessão de recarga não encontrada."));
+    if (sessao.getSituacao() != SituacaoSessao.EM_ANDAMENTO) {
+      throw recusa(HttpStatus.CONFLICT, "Esta sessão de recarga já foi encerrada.");
+    }
+    return sessao;
   }
 
   private void exigirMoradorSemSessaoAberta(Usuario morador) {

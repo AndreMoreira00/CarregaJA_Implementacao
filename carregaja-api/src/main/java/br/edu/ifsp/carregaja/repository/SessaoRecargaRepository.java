@@ -4,6 +4,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import javax.persistence.LockModeType;
+
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -19,6 +22,14 @@ public interface SessaoRecargaRepository extends CrudRepository<SessaoRecarga, L
 
   // UC02: todas as sessões abertas de uma vez, para montar o painel
   Iterable<SessaoRecarga> findBySituacao(SituacaoSessao situacao);
+
+  // Encerramento: o morador e o síndico encerrando a mesma sessão ao mesmo tempo passam um de cada vez. A sessão
+  // tem de ser lida já com a trava: lida antes sem ela, o Hibernate devolveria a cópia antiga depois da espera
+  @Lock(LockModeType.PESSIMISTIC_WRITE)
+  Optional<SessaoRecarga> findComTravaById(Long id);
+
+  @Lock(LockModeType.PESSIMISTIC_WRITE)
+  Optional<SessaoRecarga> findComTravaByUsuarioIdAndSituacao(Long usuarioId, SituacaoSessao situacao);
 
   boolean existsByVagaId(Long vagaId);
 

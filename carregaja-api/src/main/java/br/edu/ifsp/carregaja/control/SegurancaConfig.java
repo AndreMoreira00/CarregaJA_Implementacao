@@ -46,6 +46,8 @@ public class SegurancaConfig {
             .antMatchers(HttpMethod.DELETE, "/vagas/**").hasRole(SINDICO)
             .antMatchers(HttpMethod.GET, "/tarifas").hasRole(SINDICO)
             .antMatchers(HttpMethod.POST, "/tarifas").hasRole(SINDICO)
+            .antMatchers(HttpMethod.GET, "/sessoes/abertas").hasRole(SINDICO)
+            .antMatchers(HttpMethod.POST, "/sessoes/*/encerrar-administrativamente").hasRole(SINDICO)
             .antMatchers("/sessoes/**").hasRole(MORADOR)
             .antMatchers("/consumos/**").hasRole(MORADOR)
             .antMatchers("/fechamentos/**").hasRole(SINDICO)
