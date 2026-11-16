@@ -1,6 +1,6 @@
 {
   "info": {
-    "name": "CarregaJA API: UC01 e UC05",
+    "name": "CarregaJA API: UC01 a UC12",
     "description": "Roteiro de demonstração do login e do cadastro de veículo, com os dados da História de Usuário.\n\n**Como usar:** rode `scripts\\zerar-banco.bat` e depois execute a coleção inteira, de cima para baixo, no Collection Runner. Cada requisição confere a própria resposta, e os tokens e ids são guardados nas variáveis da coleção. A ordem importa: a pasta 1 troca a senha da síndica, e a coleção só roda de novo depois de zerar o banco.\n\nOs demais cenários estão nos testes de unidade da API (`scripts\\testar-api.bat`).",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
@@ -82,6 +82,51 @@
     },
     {
       "key": "idSessaoOrfa",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "emailMorador23",
+      "value": "morador23@carregaja.test",
+      "type": "string"
+    },
+    {
+      "key": "senhaMorador23Provisoria",
+      "value": "provisoria-morador23",
+      "type": "string"
+    },
+    {
+      "key": "tokenMorador23",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "idMorador17",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "idMoradora17",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "idMorador23",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "idSindica",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "hoje",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "inicioDoMes",
       "value": "",
       "type": "string"
     }
@@ -3386,6 +3431,1621 @@
                   "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
                   "const corpo = pm.response.text() ? pm.response.json() : {};",
                   "pm.test(\"lista vazia\", () => pm.expect(corpo.length).to.eql(0));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "8. UC09: Manter Moradores",
+      "description": "O síndico cadastra, altera, desativa, reativa e remove moradores. Roda depois da pasta 7: o morador do 17 já tem sessões apuradas, e por isso não pode ser removido. HU-09.",
+      "item": [
+        {
+          "name": "Sem token: recusado",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/usuarios",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "usuarios"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 401\", () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "O morador do 17 não acessa o cadastro de moradores",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/usuarios",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "usuarios"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenMorador17}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 403\", () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "A síndica lista os usuários",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/usuarios",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "usuarios"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenSindica}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const corpo = pm.response.text() ? pm.response.json() : {};",
+                  "const morador17 = corpo.find(u => u.email === pm.collectionVariables.get(\"emailMorador17\"));",
+                  "pm.test(\"o morador do 17 está na lista\", () => pm.expect(morador17).to.be.an(\"object\"));",
+                  "pm.collectionVariables.set(\"idMorador17\", morador17.id);",
+                  "const sindica = corpo.find(u => u.email === pm.collectionVariables.get(\"emailSindica\"));",
+                  "pm.collectionVariables.set(\"idSindica\", sindica.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "HU-09 02: e-mail já cadastrado é recusado",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/usuarios",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "usuarios"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenSindica}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Outro\",\n  \"email\": \"{{emailMorador17}}\",\n  \"apartamento\": \"18\",\n  \"senhaProvisoria\": \"provisoria-outro\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 409\", () => pm.response.to.have.status(409));",
+                  "const corpo = pm.response.text() ? pm.response.json() : {};",
+                  "pm.test(\"mensagem\", () => pm.expect(corpo.mensagem).to.include(\"já está cadastrado\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Morador sem apartamento é recusado",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/usuarios",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "usuarios"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenSindica}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Sem apartamento\",\n  \"email\": \"sem.apartamento@carregaja.test\",\n  \"senhaProvisoria\": \"provisoria-sem\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 400\", () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "HU-09 03: cadastra a moradora do 17, no mesmo apartamento",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/usuarios",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "usuarios"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenSindica}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Moradora do 17\",\n  \"email\": \"moradora17@carregaja.test\",\n  \"apartamento\": \"17\",\n  \"senhaProvisoria\": \"provisoria-moradora17\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 201\", () => pm.response.to.have.status(201));",
+                  "const corpo = pm.response.text() ? pm.response.json() : {};",
+                  "pm.test(\"ativa\", () => pm.expect(corpo.ativo).to.eql(true));",
+                  "pm.test(\"a senha não volta na resposta\", () => { pm.expect(corpo.senha).to.eql(undefined); pm.expect(corpo.senhaProvisoria).to.eql(undefined); });",
+                  "pm.collectionVariables.set(\"idMoradora17\", corpo.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "HU-09 01: cadastra o morador do 23",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/usuarios",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "usuarios"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenSindica}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Morador do 23\",\n  \"email\": \"{{emailMorador23}}\",\n  \"apartamento\": \"23\",\n  \"senhaProvisoria\": \"{{senhaMorador23Provisoria}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 201\", () => pm.response.to.have.status(201));",
+                  "const corpo = pm.response.text() ? pm.response.json() : {};",
+                  "pm.collectionVariables.set(\"idMorador23\", corpo.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "O morador do 23 entra com a senha provisória",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/autenticacao",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "autenticacao"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{emailMorador23}}\",\n  \"senha\": \"{{senhaMorador23Provisoria}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const corpo = pm.response.text() ? pm.response.json() : {};",
+                  "pm.collectionVariables.set(\"tokenMorador23\", corpo.token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "O morador do 23 troca a senha",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/autenticacao/senha",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "autenticacao",
+                "senha"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenMorador23}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"senhaAtual\": \"{{senhaMorador23Provisoria}}\",\n  \"senhaNova\": \"{{senhaDefinitiva}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 ou 204\", () => pm.expect(pm.response.code).to.be.oneOf([200, 204]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "O morador do 23 entra com a senha nova",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/autenticacao",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "autenticacao"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{emailMorador23}}\",\n  \"senha\": \"{{senhaDefinitiva}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const corpo = pm.response.text() ? pm.response.json() : {};",
+                  "pm.collectionVariables.set(\"tokenMorador23\", corpo.token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "HU-09 04: desativa o morador do 23, mantendo o cadastro",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/usuarios/{{idMorador23}}/desativar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "usuarios",
+                "{{idMorador23}}",
+                "desativar"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenSindica}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const corpo = pm.response.text() ? pm.response.json() : {};",
+                  "pm.test(\"inativo\", () => pm.expect(corpo.ativo).to.eql(false));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "HU-09 04: o token do 23 deixa de valer na hora",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/painel",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "painel"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenMorador23}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 401\", () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "HU-09 04: o 23 não consegue entrar",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/autenticacao",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "autenticacao"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{emailMorador23}}\",\n  \"senha\": \"{{senhaDefinitiva}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 403\", () => pm.response.to.have.status(403));",
+                  "const corpo = pm.response.text() ? pm.response.json() : {};",
+                  "pm.test(\"mensagem\", () => pm.expect(corpo.mensagem).to.include(\"Procure o síndico\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Reativa o morador do 23",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/usuarios/{{idMorador23}}/reativar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "usuarios",
+                "{{idMorador23}}",
+                "reativar"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenSindica}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const corpo = pm.response.text() ? pm.response.json() : {};",
+                  "pm.test(\"ativo\", () => pm.expect(corpo.ativo).to.eql(true));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "O morador do 23 entra de novo",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/autenticacao",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "autenticacao"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{emailMorador23}}\",\n  \"senha\": \"{{senhaDefinitiva}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const corpo = pm.response.text() ? pm.response.json() : {};",
+                  "pm.collectionVariables.set(\"tokenMorador23\", corpo.token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "RN-12: a única síndica não é desativada",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/usuarios/{{idSindica}}/desativar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "usuarios",
+                "{{idSindica}}",
+                "desativar"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenSindica}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 409\", () => pm.response.to.have.status(409));",
+                  "const corpo = pm.response.text() ? pm.response.json() : {};",
+                  "pm.test(\"mensagem\", () => pm.expect(corpo.mensagem).to.include(\"sem síndico\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "HU-09 05: o morador do 17, que tem sessões, não é removido",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/usuarios/{{idMorador17}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "usuarios",
+                "{{idMorador17}}"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenSindica}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 409\", () => pm.response.to.have.status(409));",
+                  "const corpo = pm.response.text() ? pm.response.json() : {};",
+                  "pm.test(\"oferece desativar\", () => pm.expect(corpo.mensagem.toLowerCase()).to.include(\"desativ\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Remove a moradora do 17, que não tem histórico",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/usuarios/{{idMoradora17}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "usuarios",
+                "{{idMoradora17}}"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenSindica}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 204\", () => pm.response.to.have.status(204));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Remover de novo: não existe mais",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/usuarios/{{idMoradora17}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "usuarios",
+                "{{idMoradora17}}"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenSindica}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 404\", () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "9. UC08: Definir Tarifa de Energia",
+      "description": "A R$ 0,92 foi cadastrada na pasta 4. O síndico informa só o valor: a vigência começa na data e hora do cadastro e vai até a próxima (RN-10). A sessão fixa a tarifa do início (RN-04). HU-08; os testes 04 e 06 estão nos testes de unidade e no teste com o MySQL.",
+      "item": [
+        {
+          "name": "HU-08 02: valor zero é recusado",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/tarifas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tarifas"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenSindica}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"valorKwh\": 0\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 400\", () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "O morador não define a tarifa",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/tarifas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tarifas"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenMorador17}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"valorKwh\": 0.10\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 403\", () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "O morador consulta a tarifa vigente: R$ 0,92",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/tarifas/vigente",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tarifas",
+                "vigente"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenMorador17}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const corpo = pm.response.text() ? pm.response.json() : {};",
+                  "pm.test(\"R$ 0,92\", () => pm.expect(corpo.valorKwh).to.eql(0.92));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "HU-08 01 e 03: a síndica cadastra R$ 1,05, vigente a partir de agora",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/tarifas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tarifas"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenSindica}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"valorKwh\": 1.05\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 201\", () => pm.response.to.have.status(201));",
+                  "const corpo = pm.response.text() ? pm.response.json() : {};",
+                  "pm.test(\"R$ 1,05\", () => pm.expect(corpo.valorKwh).to.eql(1.05));",
+                  "pm.test(\"com o início da vigência\", () => pm.expect(corpo.inicioVigencia).to.be.a(\"string\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "HU-08 03: a vigente passa a ser a de R$ 1,05",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/tarifas/vigente",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tarifas",
+                "vigente"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenMorador17}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const corpo = pm.response.text() ? pm.response.json() : {};",
+                  "pm.test(\"R$ 1,05\", () => pm.expect(corpo.valorKwh).to.eql(1.05));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "HU-08 03: as duas continuam consultáveis",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/tarifas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tarifas"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenSindica}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const corpo = pm.response.text() ? pm.response.json() : {};",
+                  "pm.test(\"duas tarifas\", () => pm.expect(corpo.length).to.eql(2));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "O morador do 23 cadastra o Renault Kwid",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/veiculos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "veiculos"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenMorador23}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"modelo\": \"Renault Kwid E-Tech\",\n  \"capacidadeBateria\": 27,\n  \"potenciaMaxima\": 7.0\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 201\", () => pm.response.to.have.status(201));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "HU-08 05: sessão iniciada depois do reajuste fica com R$ 1,05",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/sessoes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "sessoes"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenMorador23}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"vagaId\": {{idG02}},\n  \"nivelBateria\": 40\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 201\", () => pm.response.to.have.status(201));",
+                  "const corpo = pm.response.text() ? pm.response.json() : {};",
+                  "pm.test(\"R$ 1,05\", () => pm.expect(corpo.valorKwh).to.eql(1.05));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "HU-03 02: o morador do 17 tenta a G-02 ocupada (recusa para o UC12)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/sessoes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "sessoes"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenMorador17}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"vagaId\": {{idG02}},\n  \"nivelBateria\": 30\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 409\", () => pm.response.to.have.status(409));",
+                  "const corpo = pm.response.text() ? pm.response.json() : {};",
+                  "pm.test(\"mensagem\", () => pm.expect(corpo.mensagem).to.include(\"está ocupada\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "O morador do 23 encerra a sessão, apurada a R$ 1,05",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/sessoes/minha/encerrar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "sessoes",
+                "minha",
+                "encerrar"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenMorador23}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const corpo = pm.response.text() ? pm.response.json() : {};",
+                  "pm.test(\"R$ 1,05\", () => pm.expect(corpo.valorKwh).to.eql(1.05));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "10. UC12: Consultar Histórico de Utilização",
+      "description": "O histórico do mês corrente, com as sessões encerradas nas pastas 7 e 9 e a recusa da pasta 9. Como essas sessões duram menos de um segundo, a ocupação sai zerada e o pico, nulo. As horas e valores exatos da HU-12 (setembro, aptos 17 e 42) estão nos testes de unidade; aqui se confere a forma da resposta com dados reais.",
+      "item": [
+        {
+          "name": "O morador não acessa o histórico",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/historico?de={{inicioDoMes}}&ate={{hoje}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "historico"
+              ],
+              "query": [
+                {
+                  "key": "de",
+                  "value": "{{inicioDoMes}}"
+                },
+                {
+                  "key": "ate",
+                  "value": "{{hoje}}"
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenMorador17}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const hoje = new Date();",
+                  "const dia = d => d.getFullYear() + \"-\" + String(d.getMonth() + 1).padStart(2, \"0\") + \"-\" + String(d.getDate()).padStart(2, \"0\");",
+                  "pm.collectionVariables.set(\"hoje\", dia(hoje));",
+                  "pm.collectionVariables.set(\"inicioDoMes\", dia(new Date(hoje.getFullYear(), hoje.getMonth(), 1)));"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 403\", () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "HU-12 01 a 05: o histórico do mês",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/historico?de={{inicioDoMes}}&ate={{hoje}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "historico"
+              ],
+              "query": [
+                {
+                  "key": "de",
+                  "value": "{{inicioDoMes}}"
+                },
+                {
+                  "key": "ate",
+                  "value": "{{hoje}}"
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenSindica}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const hoje = new Date();",
+                  "const dia = d => d.getFullYear() + \"-\" + String(d.getMonth() + 1).padStart(2, \"0\") + \"-\" + String(d.getDate()).padStart(2, \"0\");",
+                  "pm.collectionVariables.set(\"hoje\", dia(hoje));",
+                  "pm.collectionVariables.set(\"inicioDoMes\", dia(new Date(hoje.getFullYear(), hoje.getMonth(), 1)));"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const corpo = pm.response.text() ? pm.response.json() : {};",
+                  "pm.test(\"tem registros\", () => pm.expect(corpo.semRegistros).to.eql(false));",
+                  "pm.test(\"01: ocupação da G-01 e da G-02, com o percentual\", () => { const vagas = corpo.ocupacaoPorVaga.map(o => o.vaga); pm.expect(vagas).to.include.members([\"G-01\", \"G-02\"]); corpo.ocupacaoPorVaga.forEach(o => pm.expect(o.percentualPeriodo).to.be.a(\"number\")); });",
+                  "// As sessões deste roteiro duram menos de um segundo: sem ocupação não há pico, e ele vem nulo",
+                  "pm.test(\"02: pico é uma hora do dia, ou nulo sem ocupação\", () => pm.expect(corpo.faixaPico === null || (corpo.faixaPico >= 0 && corpo.faixaPico <= 23)).to.eql(true));",
+                  "pm.test(\"02: as 24 faixas horárias\", () => pm.expect(corpo.faixasHorarias.length).to.eql(24));",
+                  "pm.test(\"03: consumo do apartamento 17\", () => pm.expect(corpo.consumoPorApartamento.map(c => c.apartamento)).to.include(\"17\"));",
+                  "pm.test(\"04: ao menos a recusa da pasta 9\", () => pm.expect(corpo.totalRecusas).to.be.at.least(1));",
+                  "pm.test(\"05: recusas por faixa horária\", () => pm.expect(corpo.faixasHorarias.reduce((s, f) => s + f.recusas, 0)).to.eql(corpo.totalRecusas));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Filtro por vaga: só a G-01",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/historico?de={{inicioDoMes}}&ate={{hoje}}&vagaId={{idG01}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "historico"
+              ],
+              "query": [
+                {
+                  "key": "de",
+                  "value": "{{inicioDoMes}}"
+                },
+                {
+                  "key": "ate",
+                  "value": "{{hoje}}"
+                },
+                {
+                  "key": "vagaId",
+                  "value": "{{idG01}}"
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenSindica}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const hoje = new Date();",
+                  "const dia = d => d.getFullYear() + \"-\" + String(d.getMonth() + 1).padStart(2, \"0\") + \"-\" + String(d.getDate()).padStart(2, \"0\");",
+                  "pm.collectionVariables.set(\"hoje\", dia(hoje));",
+                  "pm.collectionVariables.set(\"inicioDoMes\", dia(new Date(hoje.getFullYear(), hoje.getMonth(), 1)));"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const corpo = pm.response.text() ? pm.response.json() : {};",
+                  "pm.test(\"só a G-01\", () => pm.expect(corpo.ocupacaoPorVaga.map(o => o.vaga)).to.eql([\"G-01\"]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "HU-12 06: julho de 2026 sem registros",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/historico?de=2026-07-01&ate=2026-07-31",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "historico"
+              ],
+              "query": [
+                {
+                  "key": "de",
+                  "value": "2026-07-01"
+                },
+                {
+                  "key": "ate",
+                  "value": "2026-07-31"
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenSindica}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const corpo = pm.response.text() ? pm.response.json() : {};",
+                  "pm.test(\"sem registros, com a mensagem\", () => { pm.expect(corpo.semRegistros).to.eql(true); pm.expect(corpo.mensagem).to.be.a(\"string\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Data inválida é recusada",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/historico?de=2026-13-01&ate=2026-12-31",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "historico"
+              ],
+              "query": [
+                {
+                  "key": "de",
+                  "value": "2026-13-01"
+                },
+                {
+                  "key": "ate",
+                  "value": "2026-12-31"
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenSindica}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 400\", () => pm.response.to.have.status(400));",
+                  "const corpo = pm.response.text() ? pm.response.json() : {};",
+                  "pm.test(\"com mensagem\", () => pm.expect(corpo.mensagem).to.be.a(\"string\"));"
                 ]
               }
             }
