@@ -53,7 +53,7 @@ confere a própria resposta. Os demais cenários estão nos testes de unidade (`
 
 1. Rode `scripts\zerar-banco.bat`: a coleção começa pelo primeiro acesso da síndica.
 2. No Postman, execute a coleção inteira, de cima para baixo (*Run collection*). Os tokens e os ids ficam nas
-   variáveis da coleção. São 18 requisições e 34 verificações.
+   variáveis da coleção. São 36 requisições e 69 verificações.
 3. Depois disso, qualquer requisição pode ser repetida à mão. Para executar a coleção inteira de novo, zere o banco.
 
 A síndica usa os dados de `scripts/config.bat`; se você os mudou, ajuste as variáveis `emailSindica` e
