@@ -49,6 +49,26 @@
       "key": "idG09",
       "value": "",
       "type": "string"
+    },
+    {
+      "key": "emailMorador17",
+      "value": "morador17@carregaja.test",
+      "type": "string"
+    },
+    {
+      "key": "senhaMorador17Provisoria",
+      "value": "provisoria-morador17",
+      "type": "string"
+    },
+    {
+      "key": "tokenMorador17",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "previsaoG01",
+      "value": "",
+      "type": "string"
     }
   ],
   "item": [
@@ -1754,6 +1774,747 @@
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"Status 404\", () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "4. UC02: Consultar Painel de Vagas",
+      "description": "O painel com a G-01 e a G-02 da pasta anterior. O morador do apartamento 17 (BYD Dolphin, 60 kWh e 11,0 kW) ocupa a G-01, e a síndica, moradora do 42, a G-02. HU-02.\n\nOs estados \"concluída, ainda ocupada\" e \"excedida\" (testes 03 e 04) dependem do relógio e estão nos testes de unidade. Como a API ainda não encerra sessões, as duas vagas ficam ocupadas até zerar o banco.",
+      "item": [
+        {
+          "name": "Sem token: recusado",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/painel",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "painel"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 401\", () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "HU-02 01: as duas vagas estão livres",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/painel",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "painel"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenSindica}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const corpo = pm.response.text() ? pm.response.json() : {};",
+                  "pm.test(\"vagasLivres = 2\", () => pm.expect(corpo.vagasLivres).to.eql(2));",
+                  "pm.test(\"Duas vagas no painel\", () => pm.expect(corpo.vagas.length).to.eql(2));",
+                  "pm.test(\"vagas[0].identificacao = G-01\", () => pm.expect(corpo.vagas[0].identificacao).to.eql(\"G-01\"));",
+                  "pm.test(\"G-01 livre\", () => pm.expect(corpo.vagas[0].estado).to.eql(\"LIVRE\"));",
+                  "pm.test(\"G-02 livre\", () => pm.expect(corpo.vagas[1].estado).to.eql(\"LIVRE\"));",
+                  "pm.test(\"Vaga livre não tem previsão\", () => pm.expect(corpo.vagas[0].previsaoLiberacao).to.eql(undefined));",
+                  "pm.test(\"Sem aviso de falta de vaga\", () => pm.expect(corpo.mensagem).to.eql(undefined));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "A síndica define a tarifa de R$ 0,92",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/tarifas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tarifas"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"valorKwh\": 0.92\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenSindica}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 201\", () => pm.response.to.have.status(201));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "A síndica cadastra o morador do apartamento 17",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/usuarios",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "usuarios"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nome\": \"Morador do 17\",\n  \"email\": \"{{emailMorador17}}\",\n  \"apartamento\": \"17\",\n  \"senhaProvisoria\": \"{{senhaMorador17Provisoria}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenSindica}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 201\", () => pm.response.to.have.status(201));",
+                  "const corpo = pm.response.text() ? pm.response.json() : {};",
+                  "pm.test(\"Apartamento 17\", () => pm.expect(corpo.apartamento.numero).to.eql(\"17\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "O morador do 17 entra com a senha provisória",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/autenticacao",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "autenticacao"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{emailMorador17}}\",\n  \"senha\": \"{{senhaMorador17Provisoria}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const corpo = pm.response.text() ? pm.response.json() : {};",
+                  "pm.collectionVariables.set(\"tokenMorador17\", corpo.token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "O morador do 17 troca a senha",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/autenticacao/senha",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "autenticacao",
+                "senha"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"senhaAtual\": \"{{senhaMorador17Provisoria}}\",\n  \"senhaNova\": \"{{senhaDefinitiva}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenMorador17}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 204\", () => pm.response.to.have.status(204));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "O morador do 17 entra com a senha nova",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/autenticacao",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "autenticacao"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{emailMorador17}}\",\n  \"senha\": \"{{senhaDefinitiva}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const corpo = pm.response.text() ? pm.response.json() : {};",
+                  "pm.test(\"Só o perfil de morador\", () => pm.expect(corpo.usuario.perfis).to.have.members([\"MORADOR\"]));",
+                  "pm.collectionVariables.set(\"tokenMorador17\", corpo.token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "O morador do 17 cadastra o BYD Dolphin",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/veiculos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "veiculos"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"modelo\": \"BYD Dolphin\",\n  \"capacidadeBateria\": 60,\n  \"potenciaMaxima\": 11.0\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenMorador17}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 201\", () => pm.response.to.have.status(201));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "O morador do 17 inicia a recarga na G-01 com 20%",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/sessoes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "sessoes"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"vagaId\": {{idG01}},\n  \"nivelBateria\": 20\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenMorador17}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 201\", () => pm.response.to.have.status(201));",
+                  "const corpo = pm.response.text() ? pm.response.json() : {};",
+                  "pm.test(\"vaga = G-01\", () => pm.expect(corpo.vaga).to.eql(\"G-01\"));",
+                  "pm.test(\"potenciaEfetiva = 11.0\", () => pm.expect(corpo.potenciaEfetiva).to.eql(11.0));",
+                  "pm.test(\"energiaARepor = 48.0\", () => pm.expect(corpo.energiaARepor).to.eql(48.0));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "O morador do 17 consulta a própria sessão",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/sessoes/minha",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "sessoes",
+                "minha"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenMorador17}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const corpo = pm.response.text() ? pm.response.json() : {};",
+                  "pm.test(\"Em andamento\", () => pm.expect(corpo.estado).to.eql(\"EM_ANDAMENTO\"));",
+                  "pm.collectionVariables.set(\"previsaoG01\", corpo.previsaoConclusao);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "HU-02 02: a G-01 aparece ocupada, com a previsão",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/painel",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "painel"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenMorador17}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const corpo = pm.response.text() ? pm.response.json() : {};",
+                  "pm.test(\"vagasLivres = 1\", () => pm.expect(corpo.vagasLivres).to.eql(1));",
+                  "pm.test(\"G-01 ocupada\", () => pm.expect(corpo.vagas[0].estado).to.eql(\"OCUPADA\"));",
+                  "pm.test(\"Previsão igual à da sessão\", () => pm.expect(corpo.vagas[0].previsaoLiberacao).to.eql(pm.collectionVariables.get(\"previsaoG01\")));",
+                  "pm.test(\"G-02 livre\", () => pm.expect(corpo.vagas[1].estado).to.eql(\"LIVRE\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "HU-02 06: a síndica vê quem ocupa a G-01",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/painel",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "painel"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenSindica}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const corpo = pm.response.text() ? pm.response.json() : {};",
+                  "pm.test(\"G-01 ocupada\", () => pm.expect(corpo.vagas[0].estado).to.eql(\"OCUPADA\"));",
+                  "pm.test(\"Apartamento 17\", () => pm.expect(corpo.vagas[0].apartamento).to.eql(\"17\"));",
+                  "pm.test(\"Nome do morador\", () => pm.expect(corpo.vagas[0].morador).to.eql(\"Morador do 17\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "A síndica, moradora do 42, inicia a recarga na G-02 com 50%",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/sessoes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "sessoes"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"vagaId\": {{idG02}},\n  \"nivelBateria\": 50\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenSindica}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 201\", () => pm.response.to.have.status(201));",
+                  "const corpo = pm.response.text() ? pm.response.json() : {};",
+                  "pm.test(\"vaga = G-02\", () => pm.expect(corpo.vaga).to.eql(\"G-02\"));",
+                  "pm.test(\"potenciaEfetiva = 6.6\", () => pm.expect(corpo.potenciaEfetiva).to.eql(6.6));",
+                  "pm.test(\"energiaARepor = 30.0\", () => pm.expect(corpo.energiaARepor).to.eql(30.0));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "HU-02 05: o morador do 17 não vê quem ocupa a G-02",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/painel",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "painel"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenMorador17}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const corpo = pm.response.text() ? pm.response.json() : {};",
+                  "pm.test(\"vagas[1].identificacao = G-02\", () => pm.expect(corpo.vagas[1].identificacao).to.eql(\"G-02\"));",
+                  "pm.test(\"G-02 ocupada\", () => pm.expect(corpo.vagas[1].estado).to.eql(\"OCUPADA\"));",
+                  "pm.test(\"Previsão exibida\", () => pm.expect(corpo.vagas[1].previsaoLiberacao).to.exist);",
+                  "pm.test(\"Sem o apartamento\", () => pm.expect(corpo.vagas[1].apartamento).to.eql(undefined));",
+                  "pm.test(\"Sem o nome\", () => pm.expect(corpo.vagas[1].morador).to.eql(undefined));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "HU-02 07: nenhuma vaga livre, com a liberação mais próxima",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/painel",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "painel"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenMorador17}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const corpo = pm.response.text() ? pm.response.json() : {};",
+                  "pm.test(\"vagasLivres = 0\", () => pm.expect(corpo.vagasLivres).to.eql(0));",
+                  "pm.test(\"Mensagem: Nenhuma vaga livre. Liberação mais próxima: G-01\", () => pm.expect(corpo.mensagem).to.include(\"Nenhuma vaga livre. Liberação mais próxima: G-01\"));",
+                  "pm.test(\"A G-01 libera primeiro\", () => pm.expect(corpo.proximaLiberacao.identificacao).to.eql(\"G-01\"));",
+                  "pm.test(\"Com a previsão da G-01\", () => pm.expect(corpo.proximaLiberacao.previsaoLiberacao).to.eql(pm.collectionVariables.get(\"previsaoG01\")));",
+                  "pm.test(\"Sem identificar quem ocupa\", () => pm.expect(corpo.proximaLiberacao.apartamento).to.eql(undefined));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "HU-07 05: remover a G-02 ocupada é recusado",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/vagas/{{idG02}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "vagas",
+                "{{idG02}}"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenSindica}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 409\", () => pm.response.to.have.status(409));",
+                  "const corpo = pm.response.text() ? pm.response.json() : {};",
+                  "pm.test(\"Mensagem: desative-a em vez de remover\", () => pm.expect(corpo.mensagem).to.include(\"desative-a em vez de remover\"));"
                 ]
               }
             }
