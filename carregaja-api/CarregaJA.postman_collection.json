@@ -69,6 +69,21 @@
       "key": "previsaoG01",
       "value": "",
       "type": "string"
+    },
+    {
+      "key": "idSessaoG01",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "idSessaoG02",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "idSessaoOrfa",
+      "value": "",
+      "type": "string"
     }
   ],
   "item": [
@@ -1783,7 +1798,7 @@
     },
     {
       "name": "4. UC02: Consultar Painel de Vagas",
-      "description": "O painel com a G-01 e a G-02 da pasta anterior. O morador do apartamento 17 (BYD Dolphin, 60 kWh e 11,0 kW) ocupa a G-01, e a síndica, moradora do 42, a G-02. HU-02.\n\nOs estados \"concluída, ainda ocupada\" e \"excedida\" (testes 03 e 04) dependem do relógio e estão nos testes de unidade. Como a API ainda não encerra sessões, as duas vagas ficam ocupadas até zerar o banco.",
+      "description": "O painel com a G-01 e a G-02 da pasta anterior. O morador do apartamento 17 (BYD Dolphin, 60 kWh e 11,0 kW) ocupa a G-01, e a síndica, moradora do 42, a G-02. HU-02.\n\nOs estados \"concluída, ainda ocupada\" e \"excedida\" (testes 03 e 04) dependem do relógio e estão nos testes de unidade. As duas sessões são encerradas na pasta 7.",
       "item": [
         {
           "name": "Sem token: recusado",
@@ -2910,6 +2925,467 @@
                 "type": "text/javascript",
                 "exec": [
                   "pm.test(\"Status 401\", () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "7. UC03 e UC10: Encerrar sessão",
+      "description": "Encerra as duas sessões abertas na pasta 4: a do morador do 17 na G-01 e a da síndica, moradora do 42, na G-02. HU-03 (testes 13 a 16) e HU-10.\n\nO encerramento administrativo só vale para a sessão que passou da previsão de conclusão (RN-07), e as sessões deste roteiro acabaram de começar: aqui ele aparece recusado. Para vê-lo funcionar, inicie uma sessão com a bateria em 99%, espere a previsão (poucos minutos) e rode \"Encerramento administrativo da sessão órfã\" com o id dela em idSessaoOrfa. O caso com os números da HU-10 (14h00 a 21h00, 48,0 kWh e R$ 44,16) está nos testes de unidade.",
+      "item": [
+        {
+          "name": "UC10: a síndica lista as sessões abertas, a mais antiga primeiro",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/sessoes/abertas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "sessoes",
+                "abertas"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenSindica}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const corpo = pm.response.text() ? pm.response.json() : {};",
+                  "pm.test(\"duas sessões abertas\", () => pm.expect(corpo.length).to.eql(2));",
+                  "pm.test(\"a primeira é a da G-01, do apartamento 17\", () => { pm.expect(corpo[0].vaga).to.eql(\"G-01\"); pm.expect(corpo[0].apartamento).to.eql(\"17\"); });",
+                  "pm.collectionVariables.set(\"idSessaoG01\", corpo[0].id);",
+                  "pm.collectionVariables.set(\"idSessaoG02\", corpo[1].id);",
+                  "pm.collectionVariables.set(\"idSessaoOrfa\", corpo[1].id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "HU-10 05: o morador do 17 não vê as sessões abertas",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/sessoes/abertas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "sessoes",
+                "abertas"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenMorador17}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 403\", () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "HU-10 05: o morador do 17 não encerra a sessão da síndica",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/sessoes/{{idSessaoG02}}/encerrar-administrativamente",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "sessoes",
+                "{{idSessaoG02}}",
+                "encerrar-administrativamente"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenMorador17}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 403\", () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "RN-07: a síndica não encerra a G-01 dentro da previsão",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/sessoes/{{idSessaoG01}}/encerrar-administrativamente",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "sessoes",
+                "{{idSessaoG01}}",
+                "encerrar-administrativamente"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenSindica}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 409\", () => pm.response.to.have.status(409));",
+                  "const corpo = pm.response.text() ? pm.response.json() : {};",
+                  "pm.test(\"diz que só o morador encerra antes da previsão\", () => pm.expect(corpo.mensagem).to.include(\"Só o morador pode encerrá-la\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "HU-03 13 e 15: o morador do 17 encerra a própria sessão e vê duração, energia e valor",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/sessoes/minha/encerrar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "sessoes",
+                "minha",
+                "encerrar"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenMorador17}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const corpo = pm.response.text() ? pm.response.json() : {};",
+                  "pm.test(\"vaga = G-01\", () => pm.expect(corpo.vaga).to.eql(\"G-01\"));",
+                  "pm.test(\"situacao = ENCERRADA\", () => pm.expect(corpo.situacao).to.eql(\"ENCERRADA\"));",
+                  "pm.test(\"traz fim e duração\", () => { pm.expect(corpo.fim).to.be.a(\"string\"); pm.expect(corpo.duracao).to.match(/^[0-9]+h[0-9]{2}$/); });",
+                  "pm.test(\"traz energia e valor apurados\", () => { pm.expect(corpo.energiaEstimada).to.be.a(\"number\"); pm.expect(corpo.valor).to.be.a(\"number\"); });",
+                  "pm.test(\"energia não passa da que faltava (48,0 kWh)\", () => pm.expect(corpo.energiaEstimada).to.be.at.most(48.0));",
+                  "pm.test(\"não foi encerramento administrativo\", () => pm.expect(corpo.encerradaPor).to.eql(undefined));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "HU-03 16: encerrar de novo informa que não há sessão aberta",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/sessoes/minha/encerrar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "sessoes",
+                "minha",
+                "encerrar"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenMorador17}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 404\", () => pm.response.to.have.status(404));",
+                  "const corpo = pm.response.text() ? pm.response.json() : {};",
+                  "pm.test(\"mensagem\", () => pm.expect(corpo.mensagem).to.include(\"não tem sessão de recarga aberta\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "A síndica não encerra a G-01, que já foi encerrada",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/sessoes/{{idSessaoG01}}/encerrar-administrativamente",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "sessoes",
+                "{{idSessaoG01}}",
+                "encerrar-administrativamente"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenSindica}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 409\", () => pm.response.to.have.status(409));",
+                  "const corpo = pm.response.text() ? pm.response.json() : {};",
+                  "pm.test(\"mensagem\", () => pm.expect(corpo.mensagem).to.include(\"já foi encerrada\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "HU-03 13: a G-01 volta a aparecer livre no painel",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/painel",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "painel"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenMorador17}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const corpo = pm.response.text() ? pm.response.json() : {};",
+                  "const g01 = corpo.vagas.find(vaga => vaga.identificacao === \"G-01\");",
+                  "pm.test(\"G-01 livre\", () => pm.expect(g01.estado).to.eql(\"LIVRE\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Encerramento administrativo da sessão órfã (só depois da previsão)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/sessoes/{{idSessaoOrfa}}/encerrar-administrativamente",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "sessoes",
+                "{{idSessaoOrfa}}",
+                "encerrar-administrativamente"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenSindica}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Neste roteiro a G-02 ainda está na previsão: a resposta é 409. Depois da previsão, 200 com o registro do síndico",
+                  "const corpo = pm.response.text() ? pm.response.json() : {};",
+                  "if (pm.response.code === 200) {",
+                  "  pm.test(\"HU-10 02: marcada como administrativa, com o síndico\", () => { pm.expect(corpo.situacao).to.eql(\"ENCERRADA_ADMINISTRATIVAMENTE\"); pm.expect(corpo.encerradaPor).to.be.a(\"string\"); });",
+                  "} else {",
+                  "  pm.test(\"Status 409 enquanto está na previsão\", () => pm.response.to.have.status(409));",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "A síndica encerra a própria sessão da G-02, como moradora",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/sessoes/minha/encerrar",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "sessoes",
+                "minha",
+                "encerrar"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenSindica}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Se a G-02 já tiver sido encerrada pelo pedido anterior, não há mais o que encerrar",
+                  "pm.test(\"Status 200 ou 404\", () => pm.expect(pm.response.code).to.be.oneOf([200, 404]));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Nenhuma sessão aberta depois dos encerramentos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/sessoes/abertas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "sessoes",
+                "abertas"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenSindica}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const corpo = pm.response.text() ? pm.response.json() : {};",
+                  "pm.test(\"lista vazia\", () => pm.expect(corpo.length).to.eql(0));"
                 ]
               }
             }
