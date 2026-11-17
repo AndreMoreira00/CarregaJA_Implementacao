@@ -116,6 +116,25 @@ class FechamentoMensalControllerTest extends ControleTesteBase {
         .andExpect(jsonPath("$.itens[0].valor").value(69.92));
   }
 
+  // HU-11, teste 05: o síndico acha o rateio de um mês já fechado, sem precisar do número do fechamento
+  @Test
+  void sindicoListaOsMesesFechadosComOsItens() throws Exception {
+    when(fechamentoService.listar()).thenReturn(List.of(setembro()));
+
+    mvc.perform(get("/fechamentos").with(logado(sindico())))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$[0].ano").value(2026))
+        .andExpect(jsonPath("$[0].mes").value(9))
+        .andExpect(jsonPath("$[0].valorTotal").value(69.92))
+        .andExpect(jsonPath("$[0].itens[0].apartamento").value("42"));
+  }
+
+  @Test
+  void moradorNaoListaOsFechamentos() throws Exception {
+    mvc.perform(get("/fechamentos").with(logado(morador()))).andExpect(status().isForbidden());
+    verify(fechamentoService, never()).listar();
+  }
+
   @Test
   void buscarInexistenteDevolve404() throws Exception {
     when(fechamentoService.buscarPorId(99L)).thenReturn(Optional.empty());

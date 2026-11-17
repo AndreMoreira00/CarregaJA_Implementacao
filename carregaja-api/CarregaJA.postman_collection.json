@@ -2974,6 +2974,112 @@
               }
             }
           ]
+        },
+        {
+          "name": "HU-11 05: sem token, a lista dos fechamentos devolve 401",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/fechamentos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "fechamentos"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 401\", () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "HU-11 05: o morador do 17 não lista os fechamentos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/fechamentos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "fechamentos"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenMorador17}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 403\", () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "HU-11 05: sem mês fechado, a síndica recebe a lista vazia",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/fechamentos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "fechamentos"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenSindica}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const corpo = pm.response.json();",
+                  "pm.test(\"lista vazia: nenhum mês foi fechado neste roteiro\", () => pm.expect(corpo).to.eql([]));"
+                ]
+              }
+            }
+          ]
         }
       ]
     },

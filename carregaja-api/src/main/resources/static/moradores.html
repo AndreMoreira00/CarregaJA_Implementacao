@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Moradores - CarregaJA</title>
+<link rel="stylesheet" href="/css/estilo.css">
+</head>
+<body>
+<div id="menu"></div>
+<h1>Moradores</h1>
+<p id="aviso"></p>
+<form id="formulario">
+  <input id="id" type="hidden">
+  <label>Nome <input id="nome" required></label>
+  <label>E-mail <input id="email" type="email" required></label>
+  <label>Apartamento <input id="apartamento"></label>
+  <label><input id="sindico" type="checkbox"> É síndico (o preposto da administradora não tem apartamento)</label>
+  <label>Senha provisória (8 a 72 caracteres; ao editar, só se a pessoa esqueceu a dela) <input id="senha" minlength="8" maxlength="72" required></label>
+  <button id="salvar">Cadastrar</button>
+  <button type="button" onclick="limpar()">Cancelar</button>
+</form>
+<div class="rolagem"><table>
+<thead><tr><th>Nome</th><th>E-mail</th><th>Apto</th><th>Perfil</th><th>Situação</th><th></th></tr></thead>
+<tbody id="linhas"></tbody>
+</table></div>
+<script src="/js/comum.js"></script>
+<script src="/js/moradores.js"></script>
+</body>
+</html>

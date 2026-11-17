@@ -1,9 +1,8 @@
 @echo off
 rem Mostra o que esta no ar.
 call "%~dp0_comum.bat" || exit /b 1
-call :peca 3306 "MySQL "
-call :peca 8081 "API   "
-call :peca 8080 "Tomcat"
+call :peca 3306 "MySQL"
+call :peca 8081 "API e telas"
 if not defined CARREGAJA_SEM_PAUSA pause
 exit /b 0
 

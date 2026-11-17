@@ -40,6 +40,8 @@ public class SegurancaConfig {
         // mvcMatchers, e não antMatchers: o Spring MVC atende "/tarifas/" como "/tarifas", e o casamento exato do
         // antMatchers deixaria a barra final cair numa regra mais frouxa (RF-03, RN-07)
         .authorizeHttpRequests(regras -> regras
+            // As telas (HTML, CSS e JS) ficam em resources/static e são públicas: quem protege os dados é a API
+            .antMatchers(HttpMethod.GET, "/", "/*.html", "/css/**", "/js/**").permitAll()
             .mvcMatchers(HttpMethod.POST, "/autenticacao").permitAll()
             .mvcMatchers(HttpMethod.PUT, "/autenticacao/senha").authenticated()
             .mvcMatchers("/usuarios/**").hasRole(SINDICO)

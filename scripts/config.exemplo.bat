@@ -9,9 +9,6 @@ rem Senha do usuario root. Obrigatoria.
 set "MYSQL_SENHA="
 set "CARREGAJA_BANCO=carregaja"
 
-rem Tomcat 9
-set "TOMCAT_DIR=C:\apache-tomcat-9.0.62"
-
 rem API (valores so para desenvolvimento)
 rem Chave que assina o token de acesso, com no minimo 32 caracteres.
 set "CARREGAJA_JWT_SEGREDO=segredo-so-para-desenvolvimento-local-troque-em-producao"
