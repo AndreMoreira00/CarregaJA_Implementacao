@@ -25,7 +25,7 @@ async function mostrarFormulario() {
 function mostrarSessao(sessao) {
   $('nova').hidden = true;
   $('sessao').innerHTML = `
-    <p>Vaga <b>${esc(sessao.vaga)}</b>: ${SITUACAO[sessao.estado]}</p>
+    <p>Vaga <b>${esc(sessao.vaga)}</b> ${selo(SITUACAO[sessao.estado], COR[sessao.estado])}</p>
     <ul>
       <li>Veículo: ${esc(sessao.veiculo)}, bateria inicial ${sessao.nivelBateriaInicial}%</li>
       <li>Início: ${hora(sessao.inicio)}. Previsão de término: ${hora(sessao.previsaoConclusao)}</li>

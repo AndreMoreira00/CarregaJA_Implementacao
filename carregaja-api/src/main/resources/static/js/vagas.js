@@ -8,11 +8,11 @@ async function carregar() {
       <tr>
         <td>${esc(vaga.identificacao)}</td>
         <td>${kw(vaga.potenciaCarregador)}</td>
-        <td>${vaga.ativa ? 'Ativa' : 'Desativada'}</td>
+        <td>${vaga.ativa ? selo('Ativa', 'verde') : selo('Desativada', 'cinza')}</td>
         <td>
-          <button onclick="editar(${vaga.id})">Editar</button>
-          <button onclick="alternar(${vaga.id})">${vaga.ativa ? 'Desativar' : 'Reativar'}</button>
-          <button onclick="remover(${vaga.id})">Remover</button>
+          <button class="secundario" onclick="editar(${vaga.id})">Editar</button>
+          <button class="secundario" onclick="alternar(${vaga.id})">${vaga.ativa ? 'Desativar' : 'Reativar'}</button>
+          <button class="perigo" onclick="remover(${vaga.id})">Remover</button>
         </td>
       </tr>`).join('');
   } catch (erro) {
