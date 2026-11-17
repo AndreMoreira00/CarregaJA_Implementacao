@@ -24,6 +24,7 @@ import org.springframework.http.HttpStatus;
 
 import br.edu.ifsp.carregaja.model.Apartamento;
 import br.edu.ifsp.carregaja.model.EstadoSessao;
+import br.edu.ifsp.carregaja.model.Perfil;
 import br.edu.ifsp.carregaja.model.SessaoRecarga;
 import br.edu.ifsp.carregaja.model.SituacaoSessao;
 import br.edu.ifsp.carregaja.model.Tarifa;
@@ -66,6 +67,7 @@ class EncerramentoSessaoServiceTest {
     sindico = new Usuario();
     sindico.setId(1L);
     sindico.setNome("Síndica");
+    sindico.getPerfis().add(Perfil.SINDICO);
   }
 
   private SessaoRecargaService servicoAs(LocalDateTime momento) {
@@ -220,6 +222,18 @@ class EncerramentoSessaoServiceTest {
 
     assertEquals(HttpStatus.CONFLICT, recusa.getStatus());
     assertTrue(recusa.getMessage().contains("18:22"));
+    verify(sessaoRepository, never()).save(any());
+  }
+
+  // Segunda barreira: a rota já é do síndico, mas o encerramento grava o responsável (RF-15)
+  @Test
+  void quemNaoESindicoNaoEncerraAdministrativamente() {
+    orfa();
+
+    RegraNegocioException recusa = assertThrows(RegraNegocioException.class,
+        () -> servicoAs(LocalDateTime.of(2026, 9, 8, 21, 0)).encerrarAdministrativamente(SESSAO, morador));
+
+    assertEquals(HttpStatus.FORBIDDEN, recusa.getStatus());
     verify(sessaoRepository, never()).save(any());
   }
 
