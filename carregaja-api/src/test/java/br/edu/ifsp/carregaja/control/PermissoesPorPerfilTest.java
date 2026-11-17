@@ -14,16 +14,16 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 
-import br.edu.ifsp.carregaja.service.AutenticacaoService;
-import br.edu.ifsp.carregaja.service.ConsumoService;
-import br.edu.ifsp.carregaja.service.FechamentoMensalService;
-import br.edu.ifsp.carregaja.service.HistoricoService;
-import br.edu.ifsp.carregaja.service.PainelVagasService;
-import br.edu.ifsp.carregaja.service.SessaoRecargaService;
-import br.edu.ifsp.carregaja.service.TarifaService;
-import br.edu.ifsp.carregaja.service.UsuarioService;
-import br.edu.ifsp.carregaja.service.VagaService;
-import br.edu.ifsp.carregaja.service.VeiculoService;
+import br.edu.ifsp.carregaja.service.autenticarusuario.AutenticacaoService;
+import br.edu.ifsp.carregaja.service.consultarconsumo.ConsumoService;
+import br.edu.ifsp.carregaja.service.consultarhistorico.HistoricoService;
+import br.edu.ifsp.carregaja.service.consultarpainelvagas.PainelVagasService;
+import br.edu.ifsp.carregaja.service.definirtarifa.TarifaService;
+import br.edu.ifsp.carregaja.service.fecharmes.FechamentoMensalService;
+import br.edu.ifsp.carregaja.service.mantermoradores.UsuarioService;
+import br.edu.ifsp.carregaja.service.mantersessaorecarga.SessaoRecargaService;
+import br.edu.ifsp.carregaja.service.mantervagas.VagaService;
+import br.edu.ifsp.carregaja.service.manterveiculo.VeiculoService;
 
 /**
  * Cada rota de um perfil é negada ao outro, com e sem a barra no fim do endereço. O Spring MVC atende "/tarifas/" como
@@ -81,7 +81,7 @@ class PermissoesPorPerfilTest extends ControleTesteBase {
   }
 
   private org.springframework.test.web.servlet.ResultActions chamar(HttpMethod metodo, String caminho,
-      br.edu.ifsp.carregaja.model.Usuario quem) throws Exception {
+      br.edu.ifsp.carregaja.model.compartilhado.Usuario quem) throws Exception {
     return mvc.perform(request(metodo, caminho).with(logado(quem)).contentType(MediaType.APPLICATION_JSON).content(CORPO));
   }
 

@@ -14,7 +14,12 @@ energia de um condomínio. Os artefatos do projeto ficam no repositório
 
 As telas e a API ficam no mesmo endereço: um programa só para subir, sem configuração de acesso entre
 endereços (CORS). Os pacotes Java são organizados por camada, como nos exercícios de LP2
-(`br.edu.ifsp.carregaja.control`, `.service`, `.repository`, `.model`, `.view`).
+(`br.edu.ifsp.carregaja.control`, `.service`, `.repository`, `.model`, `.view`) e, dentro de cada camada, por
+caso de uso, com o nome do caso de uso no Astah: `control.manterveiculo`, `service.fecharmes` e assim por diante.
+O que mais de um caso de uso usa (`Usuario`, `Vaga`, `SessaoRecarga` e seus repositórios) fica em `compartilhado`, e o
+que é de todos (`TratadorDeErros`, `RegraNegocioException`, `ErroResponse`) fica na raiz da camada. O UC10 não tem
+classe própria: o back dele está em `SessaoRecargaController` e `SessaoRecargaService`, no pacote `mantersessaorecarga`.
+Nas telas é igual: cada caso de uso é uma pasta de `static` com a página e o script dela.
 
 ## O que precisa estar instalado
 
@@ -49,18 +54,18 @@ perfil, e a tela mostra a mensagem.
 
 | Tela | Quem | Caso de uso |
 |---|---|---|
-| `login.html`, `trocar-senha.html` | Todos | UC01. A senha provisória só abre a troca de senha |
+| `autenticarusuario/login.html`, `autenticarusuario/trocar-senha.html` | Todos | UC01. A senha provisória só abre a troca de senha |
 | `index.html` | Todos | Só decide para onde ir: o painel, se há login, ou o login |
-| `painel.html` | Todos | UC02. Vagas livres e ocupadas, com a previsão de liberação; só o síndico vê quem ocupa |
-| `recarga.html` | Morador | UC03. Inicia a recarga, acompanha a previsão e encerra, vendo duração, energia e valor |
-| `veiculo.html` | Morador | UC05. Modelo, capacidade da bateria e potência máxima |
-| `consumo.html` | Morador | UC06. O mês do apartamento, sessão a sessão, mês a mês |
-| `vagas.html` | Síndico | UC07. Cadastra, altera, desativa e remove vagas |
-| `tarifa.html` | Síndico | UC08. Valor do kWh, vigente a partir do cadastro, com o histórico |
-| `moradores.html` | Síndico | UC09. Cadastra, altera, desativa e remove moradores e síndicos |
-| `sessoes.html` | Síndico | UC10. Encerra a sessão de quem já tirou o veículo, depois de confirmar que viu na garagem |
-| `fechamento.html` | Síndico | UC11. Fecha o mês, mostra o rateio por apartamento e exporta em CSV |
-| `historico.html` | Síndico | UC12. Ocupação, horário de pico, recusas e consumo por período |
+| `consultarpainelvagas/painel.html` | Todos | UC02. Vagas livres e ocupadas, com a previsão de liberação; só o síndico vê quem ocupa |
+| `mantersessaorecarga/recarga.html` | Morador | UC03. Inicia a recarga, acompanha a previsão e encerra, vendo duração, energia e valor |
+| `manterveiculo/veiculo.html` | Morador | UC05. Modelo, capacidade da bateria e potência máxima |
+| `consultarconsumo/consumo.html` | Morador | UC06. O mês do apartamento, sessão a sessão, mês a mês |
+| `mantervagas/vagas.html` | Síndico | UC07. Cadastra, altera, desativa e remove vagas |
+| `definirtarifa/tarifa.html` | Síndico | UC08. Valor do kWh, vigente a partir do cadastro, com o histórico |
+| `mantermoradores/moradores.html` | Síndico | UC09. Cadastra, altera, desativa e remove moradores e síndicos |
+| `encerrarsessaoorfa/sessoes.html` | Síndico | UC10. Encerra a sessão de quem já tirou o veículo, depois de confirmar que viu na garagem |
+| `fecharmes/fechamento.html` | Síndico | UC11. Fecha o mês, mostra o rateio por apartamento e exporta em CSV |
+| `consultarhistorico/historico.html` | Síndico | UC12. Ocupação, horário de pico, recusas e consumo por período |
 
 ### Como as telas são feitas
 
@@ -71,7 +76,7 @@ Cada tela é **um arquivo HTML e um script**, sem framework e sem `import`:
   `perigo` e `selo` dão a cor dos botões e das situações.
 - `js/comum.js`: o que todas usam. Guarda o login no navegador, chama a API (`api('GET', '/vagas')`), desenha o menu
   (com a marca, os links do perfil e a página aberta destacada), faz os selos de situação e formata datas, reais e kWh.
-- `js/<tela>.js`: o script da tela. Busca os dados com `api(...)`, monta as linhas da tabela e trata o formulário.
+- `<caso de uso>/<tela>.js`, ao lado da página (ex.: `manterveiculo/veiculo.js`): o script da tela. Busca os dados com `api(...)`, monta as linhas da tabela e trata o formulário.
 
 Para mudar uma tela, edite o arquivo e rode `scripts\reiniciar-api.bat`: o `spring-boot:run` copia a pasta `static`
 para `target/classes` quando sobe.
