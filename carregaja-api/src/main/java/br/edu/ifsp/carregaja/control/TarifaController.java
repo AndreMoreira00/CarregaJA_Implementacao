@@ -19,9 +19,7 @@ import br.edu.ifsp.carregaja.model.Usuario;
 import br.edu.ifsp.carregaja.service.TarifaService;
 import br.edu.ifsp.carregaja.view.TarifaRequest;
 
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @RestController
 @RequestMapping(path = "/tarifas")
 public class TarifaController {
@@ -35,7 +33,6 @@ public class TarifaController {
   @PostMapping
   public ResponseEntity<Tarifa> criar(@AuthenticationPrincipal Usuario usuario,
       @Valid @RequestBody TarifaRequest requisicao, UriComponentsBuilder uriBuilder) {
-    log.info("POST /tarifas - usuário {} cadastrando R$ {}/kWh", usuario.getId(), requisicao.getValorKwh());
     Tarifa tarifa = tarifaService.criar(usuario, requisicao);
     URI uri = uriBuilder.path("/tarifas/{id}").buildAndExpand(tarifa.getId()).toUri();
     return ResponseEntity.created(uri).body(tarifa);
@@ -43,13 +40,11 @@ public class TarifaController {
 
   @GetMapping
   public List<Tarifa> listarTodas() {
-    log.info("GET /tarifas - listando as tarifas");
     return tarifaService.listarTodas();
   }
 
   @GetMapping(path = "/vigente")
   public ResponseEntity<Tarifa> buscarVigente() {
-    log.info("GET /tarifas/vigente");
     return ResponseEntity.of(tarifaService.buscarVigente());
   }
 }

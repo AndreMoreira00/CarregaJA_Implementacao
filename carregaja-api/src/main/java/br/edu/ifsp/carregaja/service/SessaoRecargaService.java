@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
+import br.edu.ifsp.carregaja.model.Perfil;
 import br.edu.ifsp.carregaja.model.RecusaVaga;
 import br.edu.ifsp.carregaja.model.SessaoRecarga;
 import br.edu.ifsp.carregaja.model.SituacaoSessao;
@@ -118,6 +119,10 @@ public class SessaoRecargaService {
   // veículo saiu. O sistema não sabe se o veículo está na vaga (RE-05): a confirmação é dele, e fica registrada
   @Transactional(isolation = Isolation.READ_COMMITTED)
   public SessaoResponse encerrarAdministrativamente(Long id, Usuario sindico) {
+    // A rota já é do síndico; conferir aqui é a segunda barreira, porque o encerramento grava o responsável (RF-15)
+    if (!sindico.temPerfil(Perfil.SINDICO)) {
+      throw recusa(HttpStatus.FORBIDDEN, "Só o síndico encerra a sessão de outro morador.");
+    }
     SessaoRecarga sessao = travarAberta(id);
     LocalDateTime agora = LocalDateTime.now(relogio);
     if (!agora.isAfter(sessao.getPrevisaoConclusao())) {
