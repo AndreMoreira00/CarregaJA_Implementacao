@@ -898,6 +898,401 @@
           ]
         }
       ]
+    },
+    {
+      "name": "3. UC06: Consultar Consumo do Mês",
+      "description": "Consumo do mês da síndica, que também é moradora. Ainda não há sessões de carregamento encerradas. HU-06.",
+      "item": [
+        {
+          "name": "HU-06 02: mês sem sessões informa ausência de consumo",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/consumos/meu?ano=2026&mes=8",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "consumos",
+                "meu"
+              ],
+              "query": [
+                {
+                  "key": "ano",
+                  "value": "2026"
+                },
+                {
+                  "key": "mes",
+                  "value": "8"
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenSindica}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const corpo = pm.response.text() ? pm.response.json() : {};",
+                  "pm.test(\"Sem registros\", () => pm.expect(corpo.semRegistros).to.eql(true));",
+                  "pm.test(\"Mensagem: Não há consumo registrado no mês.\", () => pm.expect(corpo.mensagem).to.include(\"Não há consumo registrado no mês.\"));",
+                  "pm.test(\"energiaKwh = 0\", () => pm.expect(corpo.energiaKwh).to.eql(0));",
+                  "pm.test(\"Nenhuma sessão\", () => pm.expect(corpo.sessoes.length).to.eql(0));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "HU-06: mês fora de 1 a 12 é recusado",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/consumos/meu?ano=2026&mes=13",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "consumos",
+                "meu"
+              ],
+              "query": [
+                {
+                  "key": "ano",
+                  "value": "2026"
+                },
+                {
+                  "key": "mes",
+                  "value": "13"
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenSindica}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 400\", () => pm.response.to.have.status(400));",
+                  "const corpo = pm.response.text() ? pm.response.json() : {};",
+                  "pm.test(\"Mensagem: O mês deve estar entre 1 e 12.\", () => pm.expect(corpo.mensagem).to.include(\"O mês deve estar entre 1 e 12.\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "HU-06: sem token devolve 401",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/consumos/meu?ano=2026&mes=9",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "consumos",
+                "meu"
+              ],
+              "query": [
+                {
+                  "key": "ano",
+                  "value": "2026"
+                },
+                {
+                  "key": "mes",
+                  "value": "9"
+                }
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 401\", () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "4. UC11: Fechar Mês e Gerar Rateio",
+      "description": "A síndica fecha agosto de 2026, sem sessões no mês. HU-11.",
+      "item": [
+        {
+          "name": "HU-11: agosto sem sessão encerrada não tem rateio",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/fechamentos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "fechamentos"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ano\": 2026,\n  \"mes\": 8\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenSindica}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 422\", () => pm.response.to.have.status(422));",
+                  "const corpo = pm.response.text() ? pm.response.json() : {};",
+                  "pm.test(\"Mensagem: Não há sessão encerrada no mês: não há rateio a fazer.\", () => pm.expect(corpo.mensagem).to.include(\"Não há sessão encerrada no mês: não há rateio a fazer.\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "HU-11 04: mês que ainda não terminou é recusado",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/fechamentos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "fechamentos"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ano\": 2099,\n  \"mes\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenSindica}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 400\", () => pm.response.to.have.status(400));",
+                  "const corpo = pm.response.text() ? pm.response.json() : {};",
+                  "pm.test(\"Mensagem: O mês ainda não terminou.\", () => pm.expect(corpo.mensagem).to.include(\"O mês ainda não terminou.\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "HU-11: mês fora de 1 a 12 é recusado",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/fechamentos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "fechamentos"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ano\": 2026,\n  \"mes\": 13\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenSindica}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 400\", () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "HU-11: fechamento inexistente devolve 404",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/fechamentos/999999",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "fechamentos",
+                "999999"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenSindica}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 404\", () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "HU-11: sem token devolve 401",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/fechamentos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "fechamentos"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ano\": 2026,\n  \"mes\": 8\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 401\", () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
     }
   ]
 }
