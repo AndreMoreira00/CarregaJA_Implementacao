@@ -30,6 +30,8 @@
   </scm>
   <properties>
     <java.version>21</java.version>
+    <!-- A versão que o Spring Boot 2.7 traz (42.3.8) tem a falha CVE-2024-1597; esta já vem corrigida -->
+    <postgresql.version>42.7.4</postgresql.version>
   </properties>
   <dependencies>
     <dependency>
@@ -81,6 +83,12 @@
     <dependency>
       <groupId>com.mysql</groupId>
       <artifactId>mysql-connector-j</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <!-- Para o banco na nuvem (Supabase), que é PostgreSQL. O driver usado sai do endereço do banco. -->
+    <dependency>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
       <scope>runtime</scope>
     </dependency>
     <dependency>
