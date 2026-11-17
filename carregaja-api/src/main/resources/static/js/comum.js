@@ -14,35 +14,35 @@ function guardarLogin(resposta) {
 
 function sair() {
   localStorage.removeItem('login');
-  location.href = '/login.html';
+  location.href = '/autenticarusuario/login.html';
 }
 
 // Toda tela, menos o login, começa por aqui: confere se há login e desenha o menu.
 // Devolve o usuário, ou nada se mandou a pessoa para outra tela.
 function iniciarPagina() {
   if (!login()) {
-    location.href = '/login.html';
+    location.href = '/autenticarusuario/login.html';
     return;
   }
   const usuario = login().usuario;
   if (usuario.trocarSenha && !location.pathname.includes('trocar-senha')) {
-    location.href = '/trocar-senha.html';   // senha provisória: só deixa trocar a senha
+    location.href = '/autenticarusuario/trocar-senha.html';   // senha provisória: só deixa trocar a senha
     return;
   }
   // O menu mostra só o que o perfil usa. A segurança continua na API, que responde 403 a quem não tem o perfil.
   const morador = usuario.perfis.includes('MORADOR');
   const sindico = usuario.perfis.includes('SINDICO');
   const links = usuario.trocarSenha ? '' :   // com senha provisória, só dá para trocar a senha
-    '<nav>' + link('painel', 'Painel') +
-    (morador ? '<span>Morador</span>' + link('recarga', 'Recarga') + link('veiculo', 'Veículo') + link('consumo', 'Consumo') : '') +
-    (sindico ? '<span>Síndico</span>' + link('sessoes', 'Sessões') + link('vagas', 'Vagas') + link('moradores', 'Moradores') +
-      link('tarifa', 'Tarifa') + link('fechamento', 'Fechamento') + link('historico', 'Histórico') : '') +
+    '<nav>' + link('consultarpainelvagas/painel', 'Painel') +
+    (morador ? '<span>Morador</span>' + link('mantersessaorecarga/recarga', 'Recarga') + link('manterveiculo/veiculo', 'Veículo') + link('consultarconsumo/consumo', 'Consumo') : '') +
+    (sindico ? '<span>Síndico</span>' + link('encerrarsessaoorfa/sessoes', 'Sessões') + link('mantervagas/vagas', 'Vagas') + link('mantermoradores/moradores', 'Moradores') +
+      link('definirtarifa/tarifa', 'Tarifa') + link('fecharmes/fechamento', 'Fechamento') + link('consultarhistorico/historico', 'Histórico') : '') +
     '</nav>';
   $('menu').innerHTML =
     '<div class="topo">' +
-      '<a class="marca" href="/painel.html">' + RAIO + 'CarregaJá</a>' +
+      '<a class="marca" href="/consultarpainelvagas/painel.html">' + RAIO + 'CarregaJá</a>' +
       '<span class="usuario"><span class="nome">' + esc(usuario.nome) + '</span>' +
-        ' <a href="/trocar-senha.html">Trocar senha</a> <a href="#" onclick="sair()">Sair</a></span>' +
+        ' <a href="/autenticarusuario/trocar-senha.html">Trocar senha</a> <a href="#" onclick="sair()">Sair</a></span>' +
     '</div>' + links;
   return usuario;
 }
@@ -50,7 +50,8 @@ function iniciarPagina() {
 // O desenho do raio, ao lado do nome do sistema.
 const RAIO = '<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M13 2 5 13h5l-1 9 9-12h-5z"/></svg>';
 
-// Um link do menu. O da página aberta ganha a classe "atual", que o estilo destaca.
+// Um link do menu. "pagina" leva a pasta do caso de uso: link('manterveiculo/veiculo', ...) abre /manterveiculo/veiculo.html.
+// O da página aberta ganha a classe "atual", que o estilo destaca.
 function link(pagina, texto) {
   const atual = location.pathname === '/' + pagina + '.html' ? ' class="atual"' : '';
   return '<a href="/' + pagina + '.html"' + atual + '>' + texto + '</a>';
