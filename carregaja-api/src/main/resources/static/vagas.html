@@ -3,34 +3,25 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="color-scheme" content="light dark">
-<title>Vagas · CarregaJA</title>
-<link rel="icon" href="/favicon.svg" type="image/svg+xml">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&display=swap">
-<link rel="stylesheet" href="/css/carregaja.css">
+<title>Vagas - CarregaJA</title>
+<link rel="stylesheet" href="/css/estilo.css">
 </head>
 <body>
-<header id="topo" class="topo"></header>
-<main id="conteudo" class="conteudo">
-<h1 class="pagina-titulo">Vagas com carregador</h1>
-<p class="subtitulo">Cadastre as vagas e a potência de cada carregador. Desativar guarda o histórico; remover só vale para vaga sem uso.</p>
-<div id="aviso" role="status" aria-live="polite"></div>
-
-<section class="cartao">
-  <h2>Nova vaga</h2>
-  <form id="nova" novalidate>
-    <div class="grade-campos">
-      <label class="campo"><span>Identificação</span><input id="identificacao" type="text" maxlength="20" autocomplete="off" placeholder="G-01"></label>
-      <label class="campo"><span>Potência do carregador (kW)</span><input id="potencia" type="number" inputmode="decimal" step="any" min="0" placeholder="7,4"></label>
-    </div>
-    <button class="botao" type="submit">Cadastrar vaga</button>
-  </form>
-</section>
-<section class="secao"><h2>Vagas cadastradas</h2><ul id="lista" class="lista"></ul></section>
-
-</main>
-<script type="module" src="/js/vagas.js"></script>
+<div id="menu"></div>
+<h1>Vagas</h1>
+<p id="aviso"></p>
+<form id="formulario">
+  <input id="id" type="hidden">
+  <label>Identificação <input id="identificacao" required></label>
+  <label>Potência do carregador (kW) <input id="potencia" type="number" step="any" min="0.1" required></label>
+  <button id="salvar">Cadastrar</button>
+  <button type="button" onclick="limpar()">Cancelar</button>
+</form>
+<div class="rolagem"><table>
+<thead><tr><th>Vaga</th><th>Potência</th><th>Situação</th><th></th></tr></thead>
+<tbody id="linhas"></tbody>
+</table></div>
+<script src="/js/comum.js"></script>
+<script src="/js/vagas.js"></script>
 </body>
 </html>

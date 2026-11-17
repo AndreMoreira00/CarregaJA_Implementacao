@@ -43,13 +43,13 @@ e o `zerar-banco` pede para apagar o banco à mão.
 
 ## As telas
 
-Abra <http://localhost:8081>. Quem não entrou vai para o login. O menu do topo mostra só o que o perfil pode usar;
-quem é síndico e também mora (tem apartamento) vê as duas áreas.
+Abra <http://localhost:8081>. Quem não entrou vai para o login. O menu do topo é o mesmo para todos, com os links do
+morador e os do síndico: a segurança está na API, que responde 403 a quem não tem o perfil, e a tela mostra a mensagem.
 
 | Tela | Quem | Caso de uso |
 |---|---|---|
 | `login.html`, `trocar-senha.html` | Todos | UC01. A senha provisória só abre a troca de senha |
-| `index.html` | Todos | Vagas livres, a sua recarga e os atalhos do perfil |
+| `index.html` | Todos | Só decide para onde ir: o painel, se há login, ou o login |
 | `painel.html` | Todos | UC02. Vagas livres e ocupadas, com a previsão de liberação; só o síndico vê quem ocupa |
 | `recarga.html` | Morador | UC03. Inicia a recarga, acompanha a previsão e encerra, vendo duração, energia e valor |
 | `veiculo.html` | Morador | UC05. Modelo, capacidade da bateria e potência máxima |
@@ -61,11 +61,17 @@ quem é síndico e também mora (tem apartamento) vê as duas áreas.
 | `fechamento.html` | Síndico | UC11. Fecha o mês, mostra o rateio por apartamento e exporta em CSV |
 | `historico.html` | Síndico | UC12. Ocupação, horário de pico, recusas e consumo por período |
 
-O estilo fica em `css/carregaja.css` (claro e escuro, conforme o aparelho) e o que as páginas têm em comum, em
-`js/app.js`: a sessão, as chamadas à API, o menu por perfil e a formatação. Cada página tem o seu arquivo em `js/`.
+### Como as telas são feitas
 
-Para editar uma tela, salve o arquivo e rode `scripts\reiniciar-api.bat`: o `spring-boot:run` copia a pasta
-`static` para `target/classes` quando sobe.
+Cada tela é **um arquivo HTML e um script**, sem framework e sem `import`:
+
+- `css/estilo.css`: o estilo de todas as telas, em 14 linhas.
+- `js/comum.js`: o que todas usam. Guarda o login no navegador, chama a API (`api('GET', '/vagas')`), desenha o menu e
+  formata datas, reais e kWh.
+- `js/<tela>.js`: o script da tela. Busca os dados com `api(...)`, monta as linhas da tabela e trata o formulário.
+
+Para mudar uma tela, edite o arquivo e rode `scripts\reiniciar-api.bat`: o `spring-boot:run` copia a pasta `static`
+para `target/classes` quando sobe.
 
 ## Testar a API no Postman
 

@@ -3,24 +3,20 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="color-scheme" content="light dark">
-<title>Meu veículo · CarregaJA</title>
-<link rel="icon" href="/favicon.svg" type="image/svg+xml">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&display=swap">
-<link rel="stylesheet" href="/css/carregaja.css">
+<title>Meu veículo - CarregaJA</title>
+<link rel="stylesheet" href="/css/estilo.css">
 </head>
 <body>
-<header id="topo" class="topo"></header>
-<main id="conteudo" class="conteudo">
-<h1 class="pagina-titulo">Meu veículo</h1>
-<p class="subtitulo">Cadastrado uma vez. Com o modelo, a bateria e a potência o sistema calcula a previsão e o valor de cada recarga.</p>
-<div id="aviso" role="status" aria-live="polite"></div>
-
-<div id="area"><p class="carregando">Carregando…</p></div>
-
-</main>
-<script type="module" src="/js/veiculo.js"></script>
+<div id="menu"></div>
+<h1>Meu veículo</h1>
+<p id="aviso"></p>
+<form id="formulario">
+  <label>Modelo <input id="modelo" required></label>
+  <label>Capacidade da bateria (kWh) <input id="capacidade" type="number" step="any" min="0.1" required></label>
+  <label>Potência máxima de carga (kW) <input id="potencia" type="number" step="any" min="0.1" required></label>
+  <button>Salvar</button>
+</form>
+<script src="/js/comum.js"></script>
+<script src="/js/veiculo.js"></script>
 </body>
 </html>

@@ -1,49 +1,32 @@
-import { iniciar, chamar, esc, tarifa, dataHora, selo, aviso, comBotao } from '/js/app.js';
-
-const usuario = iniciar({ perfis: ['SINDICO'] });
-
-function mostrar(tarifas) {
-  tarifas.sort((a, b) => String(b.inicioVigencia).localeCompare(String(a.inicioVigencia)));
-  const vigente = tarifas[0];
-  document.getElementById('vigente').innerHTML = vigente
-    ? `<span class="rotulo">Vigente desde ${dataHora(vigente.inicioVigencia)}</span><br>
-       <span class="numero-grande">${tarifa(vigente.valorKwh)}</span>
-       <p class="nota" style="margin:8px 0 0">Cadastrada por ${esc(vigente.nomeResponsavel)}. Vale para as sessões iniciadas a partir daí.</p>`
-    : '<span class="rotulo">Tarifa vigente</span><p class="vazio" style="margin:8px 0 0">Ainda não há tarifa cadastrada: ninguém consegue iniciar uma recarga.</p>';
-
-  document.getElementById('lista').innerHTML = tarifas.length
-    ? tarifas.map((item, indice) => {
-      const seguinte = tarifas[indice - 1];
-      const periodo = seguinte ? `de ${dataHora(item.inicioVigencia)} até ${dataHora(seguinte.inicioVigencia)}` : `desde ${dataHora(item.inicioVigencia)}`;
-      return `<li class="item"><div class="item-linha"><span class="item-titulo">${tarifa(item.valorKwh)}</span>${indice === 0 ? selo('LIVRE', 'Vigente') : selo('ENCERRADA', 'Anterior')}</div>
-        <div class="item-sub">${periodo} · cadastrada por ${esc(item.nomeResponsavel)}</div></li>`;
-    }).join('')
-    : '<li class="vazio">Nenhuma tarifa cadastrada.</li>';
-}
-
+// UC08: a tarifa nova vale a partir do momento em que é cadastrada, até a próxima.
 async function carregar() {
   try {
-    mostrar(await chamar('GET', '/tarifas'));
+    const tarifas = await api('GET', '/tarifas');
+    tarifas.sort((a, b) => b.inicioVigencia.localeCompare(a.inicioVigencia));   // a mais nova primeiro
+    $('vigente').innerHTML = tarifas.length
+      ? `Tarifa vigente: <b>${reais(tarifas[0].valorKwh)}</b> por kWh, desde ${dataHora(tarifas[0].inicioVigencia)}.`
+      : 'Ainda não há tarifa: ninguém consegue iniciar uma recarga.';
+    $('linhas').innerHTML = tarifas.map(tarifa => `
+      <tr>
+        <td>${dataHora(tarifa.inicioVigencia)}</td>
+        <td>${reais(tarifa.valorKwh)} por kWh</td>
+        <td>${esc(tarifa.nomeResponsavel)}</td>
+      </tr>`).join('');
   } catch (erro) {
-    aviso(erro.message, 'erro');
+    aviso(erro.message, true);
   }
 }
 
-if (usuario) {
-  document.getElementById('nova').addEventListener('submit', async evento => {
-    evento.preventDefault();
-    const texto = document.getElementById('valor').value.trim();
-    const valor = Number(texto);
-    if (!texto || !(valor > 0)) return aviso('O valor do kWh deve ser maior que zero.', 'erro');
-    if (!/^\d{1,6}([.,]\d{1,4})?$/.test(texto)) return aviso('O valor do kWh aceita até 4 casas decimais.', 'erro');
-    try {
-      await comBotao(evento.target.querySelector('button[type="submit"]'), () => chamar('POST', '/tarifas', { valorKwh: valor }));
-      evento.target.reset();
-      await carregar();
-      aviso('Tarifa cadastrada. Vale a partir de agora, e as sessões que já começaram seguem a tarifa do início.', 'ok');
-    } catch (erro) {
-      aviso(erro.message, 'erro');
-    }
-  });
-  carregar();
-}
+$('formulario').onsubmit = async evento => {
+  evento.preventDefault();
+  try {
+    await api('POST', '/tarifas', { valorKwh: Number($('valor').value) });
+    $('formulario').reset();
+    aviso('Tarifa cadastrada. As sessões que já começaram seguem a tarifa do início.');
+    carregar();
+  } catch (erro) {
+    aviso(erro.message, true);
+  }
+};
+
+if (iniciarPagina()) carregar();

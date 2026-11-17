@@ -3,24 +3,20 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="color-scheme" content="light dark">
-<title>Recarga · CarregaJA</title>
-<link rel="icon" href="/favicon.svg" type="image/svg+xml">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&display=swap">
-<link rel="stylesheet" href="/css/carregaja.css">
+<title>Recarga - CarregaJA</title>
+<link rel="stylesheet" href="/css/estilo.css">
 </head>
 <body>
-<header id="topo" class="topo"></header>
-<main id="conteudo" class="conteudo">
-<h1 class="pagina-titulo">Recarga</h1>
-<p class="subtitulo">Registre o início ao plugar o veículo e o encerramento ao retirá-lo. O consumo vai para o seu apartamento.</p>
-<div id="aviso" role="status" aria-live="polite"></div>
-
-<div id="area"><p class="carregando">Carregando…</p></div>
-
-</main>
-<script type="module" src="/js/recarga.js"></script>
+<div id="menu"></div>
+<h1>Recarga</h1>
+<p id="aviso"></p>
+<div id="sessao"></div>
+<form id="nova" hidden>
+  <label>Vaga <select id="vaga"></select></label>
+  <label>Nível da bateria agora (%) <input id="nivel" type="number" min="0" max="99" required></label>
+  <button>Iniciar recarga</button>
+</form>
+<script src="/js/comum.js"></script>
+<script src="/js/recarga.js"></script>
 </body>
 </html>

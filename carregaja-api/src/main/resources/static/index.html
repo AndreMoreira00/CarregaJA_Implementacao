@@ -1,27 +1,7 @@
 <!doctype html>
 <html lang="pt-BR">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="color-scheme" content="light dark">
-<title>Início · CarregaJA</title>
-<link rel="icon" href="/favicon.svg" type="image/svg+xml">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&display=swap">
-<link rel="stylesheet" href="/css/carregaja.css">
-</head>
+<head><meta charset="utf-8"><title>CarregaJA</title></head>
 <body>
-<header id="topo" class="topo"></header>
-<main id="conteudo" class="conteudo">
-<h1 class="pagina-titulo">Início</h1>
-<p class="subtitulo"></p>
-<div id="aviso" role="status" aria-live="polite"></div>
-
-<section id="resumo" class="resumo"></section>
-<section id="atalhos"></section>
-
-</main>
-<script type="module" src="/js/inicio.js"></script>
+<script>location.href = localStorage.getItem('login') ? '/painel.html' : '/login.html';</script>
 </body>
 </html>
