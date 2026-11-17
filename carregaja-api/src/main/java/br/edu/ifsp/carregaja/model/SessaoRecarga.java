@@ -61,4 +61,8 @@ public class SessaoRecarga {
   @Column(nullable = false)
   @Enumerated(EnumType.STRING)
   private SituacaoSessao situacao = SituacaoSessao.EM_ANDAMENTO;
+
+  // Só no encerramento administrativo: o síndico que encerrou. O horário é o fim da sessão (RN-07, RF-15)
+  @ManyToOne
+  private Usuario encerradaPor;
 }
