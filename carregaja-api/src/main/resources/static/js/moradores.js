@@ -10,11 +10,11 @@ async function carregar() {
         <td>${esc(pessoa.email)}</td>
         <td>${pessoa.apartamento ? esc(pessoa.apartamento.numero) : ''}</td>
         <td>${pessoa.perfis.includes('SINDICO') ? 'Síndico' : 'Morador'}</td>
-        <td>${pessoa.ativo ? 'Ativo' : 'Desativado'}</td>
+        <td>${pessoa.ativo ? selo('Ativo', 'verde') : selo('Desativado', 'cinza')}</td>
         <td>
-          <button onclick="editar(${pessoa.id})">Editar</button>
-          <button onclick="alternar(${pessoa.id})">${pessoa.ativo ? 'Desativar' : 'Reativar'}</button>
-          <button onclick="remover(${pessoa.id})">Remover</button>
+          <button class="secundario" onclick="editar(${pessoa.id})">Editar</button>
+          <button class="secundario" onclick="alternar(${pessoa.id})">${pessoa.ativo ? 'Desativar' : 'Reativar'}</button>
+          <button class="perigo" onclick="remover(${pessoa.id})">Remover</button>
         </td>
       </tr>`).join('');
   } catch (erro) {

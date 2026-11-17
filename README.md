@@ -43,8 +43,9 @@ e o `zerar-banco` pede para apagar o banco à mão.
 
 ## As telas
 
-Abra <http://localhost:8081>. Quem não entrou vai para o login. O menu do topo é o mesmo para todos, com os links do
-morador e os do síndico: a segurança está na API, que responde 403 a quem não tem o perfil, e a tela mostra a mensagem.
+Abra <http://localhost:8081>. Quem não entrou vai para o login. O menu do topo mostra só os links do perfil de quem
+entrou (morador, síndico ou os dois). Isso é só organização: a segurança está na API, que responde 403 a quem não tem o
+perfil, e a tela mostra a mensagem.
 
 | Tela | Quem | Caso de uso |
 |---|---|---|
@@ -65,9 +66,11 @@ morador e os do síndico: a segurança está na API, que responde 403 a quem nã
 
 Cada tela é **um arquivo HTML e um script**, sem framework e sem `import`:
 
-- `css/estilo.css`: o estilo de todas as telas, em 14 linhas.
-- `js/comum.js`: o que todas usam. Guarda o login no navegador, chama a API (`api('GET', '/vagas')`), desenha o menu e
-  formata datas, reais e kWh.
+- `css/estilo.css`: o estilo de todas as telas. As cores ficam em variáveis no começo do arquivo (azul-escuro da barra do
+  topo, verde dos botões). O conteúdo de cada tela fica num cartão branco (`<main>`), e as classes `secundario`,
+  `perigo` e `selo` dão a cor dos botões e das situações.
+- `js/comum.js`: o que todas usam. Guarda o login no navegador, chama a API (`api('GET', '/vagas')`), desenha o menu
+  (com a marca, os links do perfil e a página aberta destacada), faz os selos de situação e formata datas, reais e kWh.
 - `js/<tela>.js`: o script da tela. Busca os dados com `api(...)`, monta as linhas da tabela e trata o formulário.
 
 Para mudar uma tela, edite o arquivo e rode `scripts\reiniciar-api.bat`: o `spring-boot:run` copia a pasta `static`

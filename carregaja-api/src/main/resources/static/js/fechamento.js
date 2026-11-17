@@ -7,7 +7,7 @@ async function carregarLista() {
     fechamentos = await api('GET', '/fechamentos');
     $('lista').innerHTML = fechamentos.map(f => `
       <li>${f.mes}/${f.ano}: ${reais(f.valorTotal)}, fechado em ${dataHora(f.momento)}
-        <button onclick="ver(${f.id})">Ver rateio</button></li>`).join('');
+        <button class="secundario" onclick="ver(${f.id})">Ver rateio</button></li>`).join('');
   } catch (erro) {
     aviso(erro.message, true);
   }
@@ -41,7 +41,7 @@ function mostrarRateio(fechamento) {
       <tfoot><tr><th>Total</th><th>${kwh(fechamento.energiaTotal)}</th><th>${reais(fechamento.valorTotal)}</th></tr></tfoot>
     </table></div>
     <p>Fechado em ${dataHora(fechamento.momento)} por ${esc(fechamento.nomeResponsavel)}.</p>
-    <button onclick="exportar()">Exportar CSV</button>`;
+    <button class="secundario" onclick="exportar()">Exportar CSV</button>`;
 }
 
 // Monta o texto do arquivo (colunas separadas por ponto e vírgula, que o Excel em português abre direto) e baixa.

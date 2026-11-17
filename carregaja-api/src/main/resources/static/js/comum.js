@@ -29,13 +29,31 @@ function iniciarPagina() {
     location.href = '/trocar-senha.html';   // senha provisória: só deixa trocar a senha
     return;
   }
+  // O menu mostra só o que o perfil usa. A segurança continua na API, que responde 403 a quem não tem o perfil.
+  const morador = usuario.perfis.includes('MORADOR');
+  const sindico = usuario.perfis.includes('SINDICO');
+  const links = usuario.trocarSenha ? '' :   // com senha provisória, só dá para trocar a senha
+    '<nav>' + link('painel', 'Painel') +
+    (morador ? '<span>Morador</span>' + link('recarga', 'Recarga') + link('veiculo', 'Veículo') + link('consumo', 'Consumo') : '') +
+    (sindico ? '<span>Síndico</span>' + link('sessoes', 'Sessões') + link('vagas', 'Vagas') + link('moradores', 'Moradores') +
+      link('tarifa', 'Tarifa') + link('fechamento', 'Fechamento') + link('historico', 'Histórico') : '') +
+    '</nav>';
   $('menu').innerHTML =
-    '<a href="/painel.html">Painel</a> | ' +
-    'Morador: <a href="/recarga.html">Recarga</a> <a href="/veiculo.html">Veículo</a> <a href="/consumo.html">Consumo</a> | ' +
-    'Síndico: <a href="/sessoes.html">Sessões</a> <a href="/vagas.html">Vagas</a> <a href="/moradores.html">Moradores</a> ' +
-    '<a href="/tarifa.html">Tarifa</a> <a href="/fechamento.html">Fechamento</a> <a href="/historico.html">Histórico</a>' +
-    '<br>' + esc(usuario.nome) + ' · <a href="/trocar-senha.html">Trocar senha</a> · <a href="#" onclick="sair()">Sair</a>';
+    '<div class="topo">' +
+      '<a class="marca" href="/painel.html">' + RAIO + 'CarregaJá</a>' +
+      '<span class="usuario"><span class="nome">' + esc(usuario.nome) + '</span>' +
+        ' <a href="/trocar-senha.html">Trocar senha</a> <a href="#" onclick="sair()">Sair</a></span>' +
+    '</div>' + links;
   return usuario;
+}
+
+// O desenho do raio, ao lado do nome do sistema.
+const RAIO = '<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M13 2 5 13h5l-1 9 9-12h-5z"/></svg>';
+
+// Um link do menu. O da página aberta ganha a classe "atual", que o estilo destaca.
+function link(pagina, texto) {
+  const atual = location.pathname === '/' + pagina + '.html' ? ' class="atual"' : '';
+  return '<a href="/' + pagina + '.html"' + atual + '>' + texto + '</a>';
 }
 
 // ---------- chamada à API ----------
@@ -90,6 +108,10 @@ function anoMes(deslocamento) {
   data.setMonth(data.getMonth() + deslocamento, 1);
   return data.getFullYear() + '-' + String(data.getMonth() + 1).padStart(2, '0');
 }
+
+// Um selo colorido para a situação (livre, ocupada, desativada...). A cor vem da classe, no estilo.
+const selo = (texto, cor) => '<span class="selo ' + cor + '">' + texto + '</span>';
+const COR = { LIVRE: 'verde', OCUPADA: 'azul', EM_ANDAMENTO: 'azul', CONCLUIDA_AINDA_OCUPADA: 'amarelo', EXCEDIDA: 'vermelho' };
 
 const SITUACAO = {
   LIVRE: 'Livre',
