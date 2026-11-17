@@ -12,15 +12,16 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.RequestPostProcessor;
 
-import br.edu.ifsp.carregaja.model.Apartamento;
-import br.edu.ifsp.carregaja.model.Perfil;
-import br.edu.ifsp.carregaja.model.Usuario;
-import br.edu.ifsp.carregaja.repository.UsuarioRepository;
-import br.edu.ifsp.carregaja.service.TokenService;
+import br.edu.ifsp.carregaja.control.autenticarusuario.SegurancaConfig;
+import br.edu.ifsp.carregaja.model.compartilhado.Apartamento;
+import br.edu.ifsp.carregaja.model.compartilhado.Perfil;
+import br.edu.ifsp.carregaja.model.compartilhado.Usuario;
+import br.edu.ifsp.carregaja.repository.compartilhado.UsuarioRepository;
+import br.edu.ifsp.carregaja.service.autenticarusuario.TokenService;
 
 /** Base dos testes de rota. Usa a configuração de segurança da aplicação e gera um token válido para o usuário. */
 @Import({SegurancaConfig.class, TokenService.class})
-abstract class ControleTesteBase {
+public abstract class ControleTesteBase {
 
   @Autowired
   protected MockMvc mvc;
