@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tarifa do kWh - CarregaJA</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='5' fill='%230b2540'/%3E%3Cpath d='M13 3 6 13h5l-1 8 8-11h-5z' fill='%233ddc97'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="/css/estilo.css">
+</head>
+<body>
+<div id="menu"></div>
+<main>
+<h1>Tarifa do kWh</h1>
+<p id="aviso"></p>
+<p id="vigente"></p>
+<form id="formulario">
+  <label>Novo valor do kWh (R$), vale a partir de agora <input id="valor" type="number" step="any" min="0.0001" required></label>
+  <button>Cadastrar tarifa</button>
+</form>
+<div class="rolagem"><table>
+<thead><tr><th>Vale desde</th><th>Valor</th><th>Cadastrada por</th></tr></thead>
+<tbody id="linhas"></tbody>
+</table></div>
+</main>
+<script src="/js/comum.js"></script>
+<script src="/definirtarifa/tarifa.js"></script>
+</body>
+</html>

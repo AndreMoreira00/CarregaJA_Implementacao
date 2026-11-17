@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Recarga - CarregaJA</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='5' fill='%230b2540'/%3E%3Cpath d='M13 3 6 13h5l-1 8 8-11h-5z' fill='%233ddc97'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="/css/estilo.css">
+</head>
+<body>
+<div id="menu"></div>
+<main>
+<h1>Recarga</h1>
+<p id="aviso"></p>
+<div id="sessao"></div>
+<form id="nova" hidden>
+  <label>Vaga <select id="vaga"></select></label>
+  <label>Nível da bateria agora (%) <input id="nivel" type="number" min="0" max="99" required></label>
+  <button>Iniciar recarga</button>
+</form>
+</main>
+<script src="/js/comum.js"></script>
+<script src="/mantersessaorecarga/recarga.js"></script>
+</body>
+</html>
