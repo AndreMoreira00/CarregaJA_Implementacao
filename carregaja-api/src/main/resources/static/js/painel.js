@@ -7,7 +7,7 @@ async function carregar() {
       <tr>
         <td>${esc(vaga.identificacao)}</td>
         <td>${kw(vaga.potenciaCarregador)}</td>
-        <td>${SITUACAO[vaga.estado]}</td>
+        <td>${selo(SITUACAO[vaga.estado], COR[vaga.estado])}</td>
         <td>${vaga.previsaoLiberacao ? hora(vaga.previsaoLiberacao) : ''}</td>
         <td>${vaga.morador ? 'Apto ' + esc(vaga.apartamento) + ' - ' + esc(vaga.morador) : ''}</td>
       </tr>`).join('');

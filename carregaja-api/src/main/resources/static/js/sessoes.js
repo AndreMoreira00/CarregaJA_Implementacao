@@ -10,7 +10,7 @@ async function carregar() {
         <td>Apto ${esc(sessao.apartamento)} - ${esc(sessao.morador)}</td>
         <td>${dataHora(sessao.inicio)}</td>
         <td>${hora(sessao.previsaoConclusao)}</td>
-        <td>${SITUACAO[sessao.estado]}</td>
+        <td>${selo(SITUACAO[sessao.estado], COR[sessao.estado])}</td>
         <td>${sessao.estado === 'EM_ANDAMENTO' ? 'Dentro da previsão' : `<button onclick="encerrar(${sessao.id})">Encerrar</button>`}</td>
       </tr>`).join('');
   } catch (erro) {

@@ -1,40 +1,153 @@
-/* Estilo de todas as telas. Segue o das telas de 03/11, que usavam o tema Saga do PrimeFaces:
-   fundo cinza claro, um cartão branco no centro, menu em faixa, rótulo em cima do campo e botão azul. */
+/* Estilo de todas as telas do CarregaJá: barra azul-escura no topo, com a marca e o menu,
+   e o conteúdo num cartão branco. O verde é a cor da energia: botões, links e destaques. */
 
-html {
-  background: #f8f9fa;
+:root {
+  --tinta: #0b2540;           /* azul-escuro: barra do topo e títulos */
+  --energia: #0b7a57;         /* verde: botões e links */
+  --energia-escuro: #095f44;  /* verde do botão com o mouse em cima */
+  --raio: #3ddc97;            /* verde-claro: a marca e o item aberto no menu */
+  --fundo: #f2f5f8;
+  --linha: #dbe2ea;
+  --texto: #1c2b3a;
+  --suave: #5a6b7d;
+  --perigo: #b3261e;
+  --largura: 68rem;
 }
 
-/* O body é o cartão branco no centro da página */
 body {
-  box-sizing: border-box;
-  width: calc(100% - 2rem);
-  max-width: 30rem;
-  margin: 1.5rem auto;
-  padding: 1.5rem;
-  background: #fff;
-  border: 1px solid #dee2e6;
-  border-radius: 6px;
-  color: #495057;
+  margin: 0;
+  background: var(--fundo);
+  color: var(--texto);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   line-height: 1.5;
 }
 
+/* ---------- Barra do topo: marca, usuário e menu ---------- */
+
+#menu {
+  background: var(--tinta);
+  color: #fff;
+}
+
+#menu:empty,
+#aviso:empty,
+#resumo:empty,
+#vigente:empty {
+  display: none;
+}
+
+.topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  max-width: var(--largura);
+  margin: 0 auto;
+  padding: 0.85rem 1.25rem 0.5rem;
+}
+
+.marca {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: #fff;
+  font-size: 1.25rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.marca svg {
+  fill: var(--raio);
+}
+
+.usuario {
+  color: #b9c8d8;
+  font-size: 0.9rem;
+  text-align: right;
+}
+
+.usuario a {
+  margin-left: 0.75rem;
+  color: #fff;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.usuario a:hover {
+  text-decoration: underline;
+}
+
+nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  max-width: var(--largura);
+  margin: 0 auto;
+  padding: 0 0.6rem;
+}
+
+nav a {
+  padding: 0.6rem 0.7rem;
+  border-bottom: 3px solid transparent;
+  color: #d3deea;
+  font-size: 0.95rem;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+nav a:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+/* A página aberta fica sublinhada de verde */
+nav a.atual {
+  border-bottom-color: var(--raio);
+  color: #fff;
+  font-weight: 600;
+}
+
+/* "Morador" e "Síndico": o nome de cada grupo de links */
+nav span {
+  margin-left: 0.9rem;
+  padding: 0 0.3rem 0 0.9rem;
+  border-left: 1px solid rgba(255, 255, 255, 0.25);
+  color: #8fa6bd;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* ---------- Conteúdo: um cartão branco no centro ---------- */
+
+main {
+  box-sizing: border-box;
+  width: calc(100% - 2rem);
+  max-width: 32rem;
+  margin: 1.5rem auto 3rem;
+  padding: 1.5rem;
+  background: #fff;
+  border: 1px solid var(--linha);
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(11, 37, 64, 0.06);
+}
+
 /* As telas com tabela ganham um cartão mais largo */
-body:has(.rolagem, #resultado) {
-  max-width: 60rem;
+main:has(.rolagem, #resultado) {
+  max-width: var(--largura);
 }
 
 h1 {
   margin: 0 0 1rem;
+  color: var(--tinta);
   font-size: 1.5rem;
-  font-weight: 600;
 }
 
 h2 {
-  margin: 1.5rem 0 0.75rem;
-  font-size: 1.25rem;
-  font-weight: 600;
+  margin: 1.75rem 0 0.75rem;
+  color: var(--tinta);
+  font-size: 1.15rem;
 }
 
 p {
@@ -42,39 +155,42 @@ p {
 }
 
 a {
-  color: #2196f3;
+  color: var(--energia);
 }
 
-/* Menu: uma faixa cinza no topo do cartão */
-#menu {
-  margin: -1.5rem -1.5rem 1.5rem;
-  padding: 0.5rem;
-  background: #f8f9fa;
-  border-bottom: 1px solid #dee2e6;
-  border-radius: 6px 6px 0 0;
+/* A tela de entrada mostra a marca em cima do cartão */
+.capa {
+  margin: 3rem 1rem 0;
+  text-align: center;
 }
 
-#menu a {
-  display: inline-block;
-  padding: 0.5rem 0.75rem;
-  border-radius: 4px;
-  color: #495057;
-  text-decoration: none;
+.capa .marca {
+  color: var(--tinta);
+  font-size: 1.75rem;
 }
 
-#menu a:hover {
-  background: #e9ecef;
+.capa .marca svg {
+  fill: var(--energia);
 }
 
-/* Formulário: o rótulo fica em cima do campo */
+.capa p {
+  margin: 0.25rem 0 0;
+  color: var(--suave);
+}
+
+/* ---------- Formulário: o rótulo fica em cima do campo ---------- */
+
 form {
   margin: 0 0 1rem;
 }
 
 label {
   display: block;
-  max-width: 27rem;
-  margin: 0 0 0.75rem;
+  max-width: 28rem;
+  margin: 0 0 0.9rem;
+  color: var(--tinta);
+  font-size: 0.9rem;
+  font-weight: 600;
 }
 
 input,
@@ -82,58 +198,78 @@ select {
   display: block;
   box-sizing: border-box;
   width: 100%;
-  margin-top: 0.25rem;
-  padding: 0.5rem;
+  margin-top: 0.3rem;
+  padding: 0.6rem 0.7rem;
   background: #fff;
-  border: 1px solid #ced4da;
-  border-radius: 4px;
-  color: #495057;
+  border: 1px solid #c3cdd8;
+  border-radius: 8px;
+  color: var(--texto);
   font: inherit;
   font-size: 1rem;
-}
-
-input:hover,
-select:hover {
-  border-color: #2196f3;
+  font-weight: 400;
 }
 
 input:focus,
 select:focus,
-button:focus {
-  border-color: #2196f3;
-  outline: 0;
-  box-shadow: 0 0 0 0.2em #a6d5fa;
+button:focus-visible {
+  border-color: var(--energia);
+  outline: 3px solid rgba(11, 122, 87, 0.25);
 }
 
 input[type=checkbox] {
   display: inline;
   width: auto;
-  margin: 0 0.25rem 0 0;
+  margin: 0 0.3rem 0 0;
+  accent-color: var(--energia);
 }
 
+/* O rótulo de uma caixa de marcar é uma frase, não um título de campo */
+label:has(input[type=checkbox]) {
+  font-size: 1rem;
+  font-weight: 400;
+}
+
+/* ---------- Botões: verde é a ação principal; branco, a secundária; vermelho, a que remove ---------- */
+
 button {
-  margin: 0.25rem 0;
-  padding: 0.5rem 1rem;
-  background: #2196f3;
-  border: 1px solid #2196f3;
-  border-radius: 4px;
+  margin: 0.25rem 0.25rem 0.25rem 0;
+  padding: 0.6rem 1.1rem;
+  background: var(--energia);
+  border: 1px solid var(--energia);
+  border-radius: 8px;
   color: #fff;
   font: inherit;
-  font-size: 1rem;
+  font-weight: 600;
   cursor: pointer;
 }
 
 button:hover {
-  background: #0d89ec;
-  border-color: #0d89ec;
+  background: var(--energia-escuro);
+  border-color: var(--energia-escuro);
 }
 
-button:active {
-  background: #0b7ad1;
-  border-color: #0b7ad1;
+button.secundario {
+  background: #fff;
+  border-color: #c3cdd8;
+  color: var(--tinta);
 }
 
-/* Tabela: linhas separadas por um traço e cabeçalho cinza */
+button.secundario:hover {
+  background: #edf1f5;
+}
+
+button.perigo {
+  background: #fff;
+  border-color: #e3b4b0;
+  color: var(--perigo);
+}
+
+button.perigo:hover {
+  background: #fdeceb;
+}
+
+/* ---------- Tabela ---------- */
+
 table {
   border-collapse: collapse;
   width: 100%;
@@ -142,27 +278,38 @@ table {
 
 th,
 td {
-  padding: 0.75rem;
-  border-bottom: 1px solid #e9ecef;
+  padding: 0.7rem 0.75rem;
+  border-bottom: 1px solid var(--linha);
   text-align: left;
 }
 
-th {
-  background: #f8f9fa;
-  font-weight: 600;
+thead th {
+  background: var(--fundo);
+  color: var(--suave);
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  white-space: nowrap;
 }
 
 tbody tr:hover {
-  background: #e9ecef;
+  background: #f7f9fb;
 }
 
+/* A linha de total do rateio */
+tfoot th {
+  color: var(--tinta);
+}
+
+/* Os botões de uma linha da tabela são menores e ficam lado a lado */
 td button {
-  padding: 0.25rem 0.6rem;
+  margin: 0 0.15rem 0 0;
+  padding: 0.3rem 0.65rem;
+  font-size: 0.875rem;
 }
 
-/* O resultado de uma consulta aparece abaixo do botão, com um respiro */
-#resultado {
-  margin-top: 1rem;
+td:has(button) {
+  white-space: nowrap;
 }
 
 /* No celular, a tabela larga rola de lado dentro do cartão */
@@ -170,46 +317,108 @@ td button {
   overflow-x: auto;
 }
 
-/* Mensagens: caixa colorida com uma barra à esquerda. Sem texto, a caixa some */
+/* O resultado de uma consulta aparece abaixo do botão, com um respiro */
+#resultado {
+  margin-top: 1rem;
+}
+
+/* ---------- Selos de situação: livre, ocupada, desativada... ---------- */
+
+.selo {
+  display: inline-block;
+  padding: 0.15rem 0.6rem;
+  border-radius: 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.verde    { background: #dff5ea; color: #0a6648; }
+.azul     { background: #e2edfb; color: #1b4f91; }
+.amarelo  { background: #fff1cc; color: #7a5200; }
+.vermelho { background: #fde4e1; color: #a1241c; }
+.cinza    { background: #e9edf1; color: #4d5b6a; }
+
+/* ---------- Mensagens e destaques ---------- */
+
 #aviso {
   margin: 0 0 1rem;
-  padding: 0.75rem;
-  border-left: 6px solid;
-  border-radius: 4px;
+  padding: 0.7rem 0.9rem;
+  border: 1px solid;
+  border-radius: 8px;
   font-weight: 600;
 }
 
-#aviso:empty,
-#menu:empty {
-  display: none;
-}
-
 .erro {
-  background: #ffcdd2;
-  border-color: #ef5350;
-  color: #b71c1c;
+  background: #fdeceb;
+  border-color: #f0b8b3;
+  color: #8f1f18;
 }
 
 .ok {
-  background: #b3e5fc;
-  border-color: #03a9f4;
-  color: #01579b;
+  background: #e4f6ee;
+  border-color: #a9dcc5;
+  color: #0a5a40;
 }
 
-/* Celular: menos margem, para sobrar espaço */
-@media (max-width: 480px) {
-  body {
-    width: calc(100% - 1rem);
-    margin: 0.5rem auto;
-    padding: 1rem;
+/* O resumo do painel e a tarifa vigente: a informação principal da tela */
+#resumo,
+#vigente {
+  padding: 0.75rem 1rem;
+  background: var(--fundo);
+  border-left: 4px solid var(--raio);
+  border-radius: 8px;
+  color: var(--tinta);
+  font-weight: 600;
+}
+
+/* Os dados da sessão de recarga e a lista de meses fechados: uma linha por item, separadas por um traço */
+#sessao ul,
+#lista {
+  margin: 0 0 1rem;
+  padding: 0;
+  list-style: none;
+}
+
+#sessao li,
+#lista li {
+  padding: 0.55rem 0;
+  border-bottom: 1px solid var(--linha);
+}
+
+#lista button {
+  margin-left: 0.75rem;
+  padding: 0.3rem 0.65rem;
+  font-size: 0.875rem;
+}
+
+/* ---------- Celular ---------- */
+
+@media (max-width: 640px) {
+  .topo {
+    padding: 0.7rem 1rem 0.4rem;
   }
 
-  #menu {
-    margin: -1rem -1rem 1rem;
+  /* Sem espaço para o nome de quem entrou: ficam só "Trocar senha" e "Sair" */
+  .nome {
+    display: none;
+  }
+
+  /* O menu vira uma faixa de uma linha só, que rola de lado */
+  nav {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding: 0 0.4rem;
+  }
+
+  main {
+    width: calc(100% - 1rem);
+    margin: 0.75rem auto 2rem;
+    padding: 1rem;
   }
 
   th,
   td {
-    padding: 0.5rem;
+    padding: 0.55rem 0.6rem;
   }
 }
