@@ -65,7 +65,8 @@ morador e os do síndico: a segurança está na API, que responde 403 a quem nã
 
 Cada tela é **um arquivo HTML e um script**, sem framework e sem `import`:
 
-- `css/estilo.css`: o estilo de todas as telas, em 14 linhas.
+- `css/estilo.css`: o estilo de todas as telas, que segue o tema Saga do PrimeFaces das telas de 03/11: fundo cinza,
+  cartão branco no centro, menu em faixa e botão azul.
 - `js/comum.js`: o que todas usam. Guarda o login no navegador, chama a API (`api('GET', '/vagas')`), desenha o menu e
   formata datas, reais e kWh.
 - `js/<tela>.js`: o script da tela. Busca os dados com `api(...)`, monta as linhas da tabela e trata o formulário.
