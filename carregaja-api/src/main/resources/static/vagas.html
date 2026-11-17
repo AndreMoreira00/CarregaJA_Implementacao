@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vagas - CarregaJA</title>
+<link rel="stylesheet" href="/css/estilo.css">
+</head>
+<body>
+<div id="menu"></div>
+<h1>Vagas</h1>
+<p id="aviso"></p>
+<form id="formulario">
+  <input id="id" type="hidden">
+  <label>Identificação <input id="identificacao" required></label>
+  <label>Potência do carregador (kW) <input id="potencia" type="number" step="any" min="0.1" required></label>
+  <button id="salvar">Cadastrar</button>
+  <button type="button" onclick="limpar()">Cancelar</button>
+</form>
+<div class="rolagem"><table>
+<thead><tr><th>Vaga</th><th>Potência</th><th>Situação</th><th></th></tr></thead>
+<tbody id="linhas"></tbody>
+</table></div>
+<script src="/js/comum.js"></script>
+<script src="/js/vagas.js"></script>
+</body>
+</html>

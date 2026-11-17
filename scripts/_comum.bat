@@ -13,5 +13,4 @@ if "%MYSQL_SENHA%"=="" (
 )
 rem Variavel lida pelo cliente do MySQL, assim a senha nao aparece na linha de comando
 set "MYSQL_PWD=%MYSQL_SENHA%"
-set "CATALINA_HOME=%TOMCAT_DIR%"
 exit /b 0

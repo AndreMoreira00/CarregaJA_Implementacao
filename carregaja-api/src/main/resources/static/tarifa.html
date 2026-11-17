@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tarifa do kWh - CarregaJA</title>
+<link rel="stylesheet" href="/css/estilo.css">
+</head>
+<body>
+<div id="menu"></div>
+<h1>Tarifa do kWh</h1>
+<p id="aviso"></p>
+<p id="vigente"></p>
+<form id="formulario">
+  <label>Novo valor do kWh (R$), vale a partir de agora <input id="valor" type="number" step="any" min="0.0001" required></label>
+  <button>Cadastrar tarifa</button>
+</form>
+<div class="rolagem"><table>
+<thead><tr><th>Vale desde</th><th>Valor</th><th>Cadastrada por</th></tr></thead>
+<tbody id="linhas"></tbody>
+</table></div>
+<script src="/js/comum.js"></script>
+<script src="/js/tarifa.js"></script>
+</body>
+</html>

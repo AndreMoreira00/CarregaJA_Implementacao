@@ -1,6 +1,7 @@
 package br.edu.ifsp.carregaja.control;
 
 import java.net.URI;
+import java.util.List;
 
 import javax.validation.Valid;
 
@@ -35,6 +36,11 @@ public class FechamentoMensalController {
     FechamentoMensalResponse fechamento = fechamentoService.fechar(usuario, requisicao);
     URI uri = uriBuilder.path("/fechamentos/{id}").buildAndExpand(fechamento.getId()).toUri();
     return ResponseEntity.created(uri).body(fechamento);
+  }
+
+  @GetMapping
+  public List<FechamentoMensalResponse> listar() {
+    return fechamentoService.listar();
   }
 
   @GetMapping(path = "/{id}")

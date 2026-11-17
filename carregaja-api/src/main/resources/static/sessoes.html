@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sessões abertas - CarregaJA</title>
+<link rel="stylesheet" href="/css/estilo.css">
+</head>
+<body>
+<div id="menu"></div>
+<h1>Sessões abertas</h1>
+<p id="aviso"></p>
+<p>Só o morador encerra a própria sessão. Você encerra a que passou da previsão, depois de ver na garagem que o veículo saiu.</p>
+<div class="rolagem"><table>
+<thead><tr><th>Vaga</th><th>Ocupante</th><th>Início</th><th>Previsão</th><th>Situação</th><th></th></tr></thead>
+<tbody id="linhas"></tbody>
+</table></div>
+<button onclick="carregar()">Atualizar</button>
+<script src="/js/comum.js"></script>
+<script src="/js/sessoes.js"></script>
+</body>
+</html>

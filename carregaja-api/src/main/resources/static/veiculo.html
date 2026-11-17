@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Meu veículo - CarregaJA</title>
+<link rel="stylesheet" href="/css/estilo.css">
+</head>
+<body>
+<div id="menu"></div>
+<h1>Meu veículo</h1>
+<p id="aviso"></p>
+<form id="formulario">
+  <label>Modelo <input id="modelo" required></label>
+  <label>Capacidade da bateria (kWh) <input id="capacidade" type="number" step="any" min="0.1" required></label>
+  <label>Potência máxima de carga (kW) <input id="potencia" type="number" step="any" min="0.1" required></label>
+  <button>Salvar</button>
+</form>
+<script src="/js/comum.js"></script>
+<script src="/js/veiculo.js"></script>
+</body>
+</html>

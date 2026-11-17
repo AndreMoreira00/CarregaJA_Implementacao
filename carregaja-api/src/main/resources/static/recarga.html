@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Recarga - CarregaJA</title>
+<link rel="stylesheet" href="/css/estilo.css">
+</head>
+<body>
+<div id="menu"></div>
+<h1>Recarga</h1>
+<p id="aviso"></p>
+<div id="sessao"></div>
+<form id="nova" hidden>
+  <label>Vaga <select id="vaga"></select></label>
+  <label>Nível da bateria agora (%) <input id="nivel" type="number" min="0" max="99" required></label>
+  <button>Iniciar recarga</button>
+</form>
+<script src="/js/comum.js"></script>
+<script src="/js/recarga.js"></script>
+</body>
+</html>

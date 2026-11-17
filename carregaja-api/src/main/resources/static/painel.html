@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Painel de vagas - CarregaJA</title>
+<link rel="stylesheet" href="/css/estilo.css">
+</head>
+<body>
+<div id="menu"></div>
+<h1>Painel de vagas</h1>
+<p id="aviso"></p>
+<p id="resumo"></p>
+<div class="rolagem"><table>
+<thead><tr><th>Vaga</th><th>Potência</th><th>Situação</th><th>Libera por volta de</th><th>Ocupante (só o síndico vê)</th></tr></thead>
+<tbody id="linhas"></tbody>
+</table></div>
+<button onclick="carregar()">Atualizar</button>
+<script src="/js/comum.js"></script>
+<script src="/js/painel.js"></script>
+</body>
+</html>

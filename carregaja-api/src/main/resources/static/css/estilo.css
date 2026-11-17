@@ -1,0 +1,14 @@
+body { font-family: sans-serif; max-width: 800px; margin: 0 auto; padding: 8px 12px 40px; line-height: 1.4; }
+#menu { border-bottom: 1px solid #999; padding-bottom: 8px; margin-bottom: 8px; }
+#menu a { margin-right: 6px; }
+h1 { font-size: 1.5em; }
+table { border-collapse: collapse; width: 100%; margin: 8px 0; }
+th, td { border: 1px solid #ccc; padding: 6px; text-align: left; }
+label { display: block; margin: 8px 0; }
+input, select, button { font-size: 16px; padding: 6px; }
+input, select { width: 100%; box-sizing: border-box; }
+input[type=checkbox] { width: auto; }
+button { margin: 2px 0; }
+.rolagem { overflow-x: auto; }
+.erro { color: #b00020; }
+.ok { color: #1b6e2d; }

@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trocar senha - CarregaJA</title>
+<link rel="stylesheet" href="/css/estilo.css">
+</head>
+<body>
+<div id="menu"></div>
+<h1>Trocar senha</h1>
+<p id="aviso"></p>
+<form id="formulario">
+  <label>Senha atual <input id="atual" type="password" required></label>
+  <label>Senha nova (de 8 a 72 caracteres) <input id="nova" type="password" minlength="8" maxlength="72" required></label>
+  <label>Repita a senha nova <input id="repetida" type="password" required></label>
+  <button>Trocar senha</button>
+</form>
+<script src="/js/comum.js"></script>
+<script src="/js/trocar-senha.js"></script>
+</body>
+</html>

@@ -89,6 +89,15 @@ public class FechamentoMensalService {
         .map(fechamento -> responder(fechamento, itemRepository.findByFechamentoMensalId(fechamento.getId())));
   }
 
+  /** Os meses já fechados, do mais recente ao mais antigo: sem isso o rateio só se acha pelo número do fechamento. */
+  public List<FechamentoMensalResponse> listar() {
+    List<FechamentoMensalResponse> fechamentos = new ArrayList<>();
+    for (FechamentoMensal fechamento : fechamentoRepository.findAllByOrderByAnoDescMesDesc()) {
+      fechamentos.add(responder(fechamento, itemRepository.findByFechamentoMensalId(fechamento.getId())));
+    }
+    return fechamentos;
+  }
+
   private void exigirSemSessaoAberta(List<SessaoRecarga> sessoes) {
     String abertas = "";
     for (SessaoRecarga sessao : sessoes) {
