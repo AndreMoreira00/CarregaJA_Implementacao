@@ -40,6 +40,7 @@ class UsuarioServiceTest {
   private ApartamentoRepository apartamentoRepository;
   private VeiculoRepository veiculoRepository;
   private SessaoRecargaRepository sessaoRepository;
+  private RecusaVagaRepository recusaRepository;
   private UsuarioService service;
 
   @BeforeEach
@@ -52,8 +53,9 @@ class UsuarioServiceTest {
     when(usuarioRepository.findByEmail(any())).thenReturn(Optional.empty());
     when(apartamentoRepository.findByNumero(any())).thenReturn(Optional.empty());
     sessaoRepository = mock(SessaoRecargaRepository.class);
+    recusaRepository = mock(RecusaVagaRepository.class);
     service = new UsuarioService(usuarioRepository, apartamentoRepository, veiculoRepository, sessaoRepository,
-        mock(RecusaVagaRepository.class), ENCODER);
+        recusaRepository, ENCODER);
   }
 
   private static UsuarioRequest requisicao(String apartamento, boolean sindico, String senha) {
@@ -74,6 +76,12 @@ class UsuarioServiceTest {
     usuario.getPerfis().addAll(Set.of(perfis));
     when(usuarioRepository.findById(id)).thenReturn(Optional.of(usuario));
     return usuario;
+  }
+
+  private static void morarNo(Usuario usuario, String numero) {
+    Apartamento apartamento = new Apartamento();
+    apartamento.setNumero(numero);
+    usuario.setApartamento(apartamento);
   }
 
   // HU-09, teste 01
@@ -228,6 +236,58 @@ class UsuarioServiceTest {
     assertEquals(HttpStatus.CONFLICT, recusa.getStatus());
     assertTrue(recusa.getMessage().contains("desative"));
     verify(usuarioRepository, never()).delete(usuario);
+  }
+
+  @Test
+  void moradorComSessoesNaoTrocaDeApartamento() {
+    Usuario usuario = existente(42L, Perfil.MORADOR);
+    morarNo(usuario, "42");
+    when(sessaoRepository.existsByUsuarioId(42L)).thenReturn(true);
+
+    RegraNegocioException recusa = assertThrows(RegraNegocioException.class,
+        () -> service.atualizar(42L, requisicao("17", false, null)));
+
+    assertEquals(HttpStatus.CONFLICT, recusa.getStatus());
+    assertEquals("42", usuario.getApartamento().getNumero());
+    verify(usuarioRepository, never()).save(any());
+  }
+
+  @Test
+  void moradorComSessoesNaoFicaSemApartamento() {
+    Usuario sindica = existente(1L, Perfil.SINDICO, Perfil.MORADOR);
+    morarNo(sindica, "42");
+    when(sessaoRepository.existsByUsuarioId(1L)).thenReturn(true);
+
+    assertThrows(RegraNegocioException.class, () -> service.atualizar(1L, requisicao(" ", true, null)));
+
+    assertEquals("42", sindica.getApartamento().getNumero());
+    assertTrue(sindica.temPerfil(Perfil.MORADOR));
+    verify(usuarioRepository, never()).save(any());
+  }
+
+  @Test
+  void moradorComTentativaDeVagaNaoTrocaDeApartamento() {
+    Usuario usuario = existente(42L, Perfil.MORADOR);
+    morarNo(usuario, "42");
+    when(recusaRepository.existsByUsuarioId(42L)).thenReturn(true);
+
+    assertThrows(RegraNegocioException.class, () -> service.atualizar(42L, requisicao("17", false, null)));
+
+    verify(usuarioRepository, never()).save(any());
+  }
+
+  @Test
+  void moradorComSessoesAlteraOsOutrosDadosNoMesmoApartamento() {
+    Usuario usuario = existente(42L, Perfil.MORADOR);
+    morarNo(usuario, "42");
+    when(sessaoRepository.existsByUsuarioId(42L)).thenReturn(true);
+    UsuarioRequest requisicao = requisicao(" 42 ", false, null);
+    requisicao.setNome("Ana Souza");
+
+    service.atualizar(42L, requisicao);
+
+    assertEquals("Ana Souza", usuario.getNome());
+    verify(usuarioRepository).save(usuario);
   }
 
   @Test

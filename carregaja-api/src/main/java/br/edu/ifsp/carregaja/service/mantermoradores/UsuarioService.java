@@ -65,6 +65,7 @@ public class UsuarioService {
       if (usuario.temPerfil(Perfil.SINDICO) && !requisicao.isSindico()) {
         exigirOutroSindicoAtivo();
       }
+      exigirMesmoApartamentoSeTemHistorico(usuario, requisicao);
       copiarDados(requisicao, usuario);
       if (requisicao.getSenhaProvisoria() != null) {
         usuario.setSenha(passwordEncoder.encode(requisicao.getSenhaProvisoria()));
@@ -97,7 +98,7 @@ public class UsuarioService {
     Optional<Usuario> encontrado = usuarioRepository.findById(id);
     encontrado.ifPresent(usuario -> {
       // HU-09, teste 05; RN-09: quem tem histórico é desativado, e não removido
-      if (sessaoRepository.existsByUsuarioId(id) || recusaRepository.existsByUsuarioId(id)) {
+      if (temHistorico(id)) {
         throw new RegraNegocioException(HttpStatus.CONFLICT,
             "Este morador tem sessões registradas: desative-o em vez de remover.");
       }
@@ -108,6 +109,22 @@ public class UsuarioService {
       usuarioRepository.delete(usuario);
     });
     return encontrado.isPresent();
+  }
+
+  private boolean temHistorico(Long id) {
+    return sessaoRepository.existsByUsuarioId(id) || recusaRepository.existsByUsuarioId(id);
+  }
+
+  // Consumo, rateio e histórico seguem o apartamento atual do morador: trocá-lo levaria
+  // as sessões passadas junto, e sem apartamento o fechamento do mês quebraria
+  private void exigirMesmoApartamentoSeTemHistorico(Usuario usuario, UsuarioRequest requisicao) {
+    String atual = usuario.getApartamento() == null ? "" : usuario.getApartamento().getNumero();
+    String novo = requisicao.getApartamento() == null ? "" : requisicao.getApartamento().trim();
+    if (!atual.equals(novo) && temHistorico(usuario.getId())) {
+      throw new RegraNegocioException(HttpStatus.CONFLICT, "Este morador tem sessões registradas: o apartamento "
+          + "não pode ser trocado nem retirado. Se ele se mudou, desative-o e faça um cadastro novo, com outro "
+          + "e-mail, no apartamento novo.");
+    }
   }
 
   private void copiarDados(UsuarioRequest requisicao, Usuario usuario) {
