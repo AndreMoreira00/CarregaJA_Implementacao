@@ -9,6 +9,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -17,7 +19,9 @@ import lombok.Setter;
 
 import br.edu.ifsp.carregaja.model.compartilhado.Usuario;
 
+// Um fechamento por mês. Quem garante é o banco: dois pedidos ao mesmo tempo passam juntos pela verificação do serviço
 @Entity
+@Table(uniqueConstraints = @UniqueConstraint(name = "uk_fechamento_mensal_ano_mes", columnNames = {"ano", "mes"}))
 @Getter
 @Setter
 public class FechamentoMensal {

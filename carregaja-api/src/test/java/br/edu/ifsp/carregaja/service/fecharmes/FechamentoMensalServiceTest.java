@@ -19,6 +19,7 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 
 import br.edu.ifsp.carregaja.model.compartilhado.Apartamento;
@@ -163,6 +164,20 @@ class FechamentoMensalServiceTest {
 
     assertEquals(HttpStatus.CONFLICT, recusa.getStatus());
     verify(fechamentoRepository, never()).save(any());
+  }
+
+  // Roteiro de Teste, UC11 cenário 07: o outro pedido gravou o mesmo mês entre a verificação e a gravação
+  @Test
+  void fechamentoSimultaneoDoMesmoMesERecusadoPeloBanco() {
+    when(fechamentoRepository.save(any(FechamentoMensal.class)))
+        .thenThrow(new DataIntegrityViolationException("uk_fechamento_mensal_ano_mes"));
+
+    RegraNegocioException recusa = assertThrows(RegraNegocioException.class,
+        () -> service.fechar(sindico, requisicao(2026, 9)));
+
+    assertEquals(HttpStatus.CONFLICT, recusa.getStatus());
+    assertEquals("Este mês já foi fechado.", recusa.getMessage());
+    verify(itemRepository, never()).save(any());
   }
 
   // HU-11, teste 04
