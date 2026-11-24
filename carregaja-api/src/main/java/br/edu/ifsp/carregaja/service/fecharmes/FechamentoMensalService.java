@@ -10,6 +10,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +31,7 @@ import br.edu.ifsp.carregaja.view.fecharmes.FechamentoMensalResponse.Item;
 @Service
 public class FechamentoMensalService {
 
+  private static final String MES_JA_FECHADO = "Este mês já foi fechado.";
   private static final DateTimeFormatter DATA_HORA = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
   private final FechamentoMensalRepository fechamentoRepository;
@@ -51,7 +53,7 @@ public class FechamentoMensalService {
   public FechamentoMensalResponse fechar(Usuario responsavel, FechamentoMensalRequest requisicao) {
     LocalDateTime inicio = rateioService.inicioDoMes(requisicao.getAno(), requisicao.getMes());
     if (fechamentoRepository.existsByAnoAndMes(requisicao.getAno(), requisicao.getMes())) {
-      throw new RegraNegocioException(HttpStatus.CONFLICT, "Este mês já foi fechado.");
+      throw new RegraNegocioException(HttpStatus.CONFLICT, MES_JA_FECHADO);
     }
     if (LocalDateTime.now(relogio).isBefore(inicio.plusMonths(1))) {
       throw new RegraNegocioException(HttpStatus.BAD_REQUEST, "O mês ainda não terminou.");
@@ -71,7 +73,12 @@ public class FechamentoMensalService {
     fechamento.setValorTotal(rateioService.somarValor(apuradas));
     fechamento.setMomento(LocalDateTime.now(relogio));
     fechamento.setResponsavel(responsavel);
-    fechamento = fechamentoRepository.save(fechamento);
+    try {
+      fechamento = fechamentoRepository.save(fechamento);
+    } catch (DataIntegrityViolationException e) {
+      // Outro pedido fechou o mesmo mês depois da verificação acima (Roteiro de Teste, UC11 cenário 07)
+      throw new RegraNegocioException(HttpStatus.CONFLICT, MES_JA_FECHADO);
+    }
 
     List<ItemRateio> itens = new ArrayList<>();
     for (List<SessaoRecarga> doApartamento : rateioService.separarPorApartamento(apuradas).values()) {

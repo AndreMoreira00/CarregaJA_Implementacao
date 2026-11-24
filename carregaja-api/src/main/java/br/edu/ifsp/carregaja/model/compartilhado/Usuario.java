@@ -1,5 +1,7 @@
 package br.edu.ifsp.carregaja.model.compartilhado;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -41,6 +43,16 @@ public class Usuario {
 
   // Começa como true porque a senha inicial é provisória e precisa ser trocada no primeiro acesso
   private boolean trocarSenha = true;
+
+  // Token emitido antes desta hora não vale mais: trocar ou redefinir a senha encerra os acessos já abertos.
+  // Nulo enquanto a senha nunca foi trocada
+  @JsonIgnore
+  private Instant senhaTrocadaEm;
+
+  /** Grava a hora da troca, em segundos inteiros como a emissão do token, para o token novo não cair junto. */
+  public void marcarTrocaDeSenha() {
+    senhaTrocadaEm = Instant.now().truncatedTo(ChronoUnit.SECONDS);
+  }
 
   // Pode ficar nulo, porque o síndico pode ser um preposto da administradora que não mora no condomínio
   @ManyToOne

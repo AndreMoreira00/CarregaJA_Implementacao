@@ -12,12 +12,15 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.time.Instant;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.request.RequestPostProcessor;
 
 import br.edu.ifsp.carregaja.control.ControleTesteBase;
 import br.edu.ifsp.carregaja.control.manterveiculo.VeiculoController;
@@ -154,6 +157,27 @@ class AutenticacaoControllerTest extends ControleTesteBase {
     desativado.setAtivo(false);
 
     mvc.perform(get("/veiculos/meu").with(logado(desativado))).andExpect(status().isUnauthorized());
+  }
+
+  // Roteiro de Teste, UC01 cenário 08: trocar a senha encerra os acessos abertos com a senha antiga
+  @Test
+  void tokenEmitidoAntesDaTrocaDeSenhaDevolve401() throws Exception {
+    Usuario trocou = morador();
+    RequestPostProcessor tokenAntigo = logado(trocou);
+    trocou.setSenhaTrocadaEm(Instant.now().plusSeconds(60));
+
+    mvc.perform(get("/veiculos/meu").with(tokenAntigo)).andExpect(status().isUnauthorized());
+  }
+
+  @Test
+  void tokenEmitidoDepoisDaTrocaDeSenhaVale() throws Exception {
+    Usuario trocou = morador();
+    trocou.setSenhaTrocadaEm(Instant.now().minusSeconds(60));
+
+    mvc.perform(get("/veiculos").with(logado(trocou))).andExpect(status().isForbidden());
+    mvc.perform(put("/autenticacao/senha").with(logado(trocou))
+        .contentType(MediaType.APPLICATION_JSON).content(TROCA))
+        .andExpect(status().isNoContent());
   }
 
   @Test

@@ -2,6 +2,7 @@ package br.edu.ifsp.carregaja.service.mantermoradores;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -174,6 +175,7 @@ class UsuarioServiceTest {
 
     assertTrue(usuario.isTrocarSenha());
     assertTrue(ENCODER.matches("provisoria2", usuario.getSenha()));
+    assertNotNull(usuario.getSenhaTrocadaEm());   // o token que o morador tinha deixa de valer
   }
 
   // HU-09, teste 04

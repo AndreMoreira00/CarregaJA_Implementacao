@@ -49,6 +49,7 @@ public class AutenticacaoService {
     }
     usuario.setSenha(passwordEncoder.encode(requisicao.getSenhaNova()));
     usuario.setTrocarSenha(false);
+    usuario.marcarTrocaDeSenha();
     usuarioRepository.save(usuario);
   }
 

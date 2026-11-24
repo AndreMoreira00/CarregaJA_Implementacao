@@ -43,9 +43,24 @@ $('nova').onsubmit = async evento => {
     carregar();
   } catch (erro) {
     aviso(erro.message, true);
+    if (erro.status === 422 && await semVeiculo()) encaminharAoVeiculo();
     mostrarFormulario();   // atualiza as vagas: a escolhida pode ter sido ocupada por outro morador
   }
 };
+
+// HU-03, teste 05: quem não tem veículo é levado ao cadastro dele (UC05), que a recarga precisa
+async function semVeiculo() {
+  try {
+    await api('GET', '/veiculos/meu');
+    return false;
+  } catch (erro) {
+    return erro.status === 404;
+  }
+}
+
+function encaminharAoVeiculo() {
+  $('aviso').insertAdjacentHTML('beforeend', ' <a href="/manterveiculo/veiculo.html">Cadastrar meu veículo</a>');
+}
 
 async function encerrar() {
   if (!confirm('Encerrar a recarga? A vaga volta a ficar livre.')) return;
