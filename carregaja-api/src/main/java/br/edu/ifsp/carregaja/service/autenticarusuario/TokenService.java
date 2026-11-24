@@ -11,6 +11,7 @@ import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -41,9 +42,22 @@ public class TokenService {
   }
 
   public Optional<Long> lerUsuarioId(String token) {
+    return ler(token).map(dados -> Long.valueOf(dados.getSubject()));
+  }
+
+  /** O token vale só se foi emitido depois da última troca de senha do usuário (Roteiro de Teste, UC01 cenário 08). */
+  public boolean emitidoDepoisDaTrocaDeSenha(String token, Usuario usuario) {
+    if (usuario.getSenhaTrocadaEm() == null) {
+      return true;
+    }
+    return ler(token)
+        .map(dados -> !dados.getIssuedAt().toInstant().isBefore(usuario.getSenhaTrocadaEm()))
+        .orElse(false);
+  }
+
+  private Optional<Claims> ler(String token) {
     try {
-      String id = Jwts.parser().verifyWith(chave).build().parseSignedClaims(token).getPayload().getSubject();
-      return Optional.of(Long.valueOf(id));
+      return Optional.of(Jwts.parser().verifyWith(chave).build().parseSignedClaims(token).getPayload());
     } catch (JwtException | IllegalArgumentException e) {
       return Optional.empty();
     }

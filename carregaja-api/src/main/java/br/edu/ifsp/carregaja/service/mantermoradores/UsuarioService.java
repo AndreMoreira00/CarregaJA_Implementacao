@@ -70,6 +70,7 @@ public class UsuarioService {
       if (requisicao.getSenhaProvisoria() != null) {
         usuario.setSenha(passwordEncoder.encode(requisicao.getSenhaProvisoria()));
         usuario.setTrocarSenha(true);
+        usuario.marcarTrocaDeSenha();
       }
       return usuarioRepository.save(usuario);
     });
