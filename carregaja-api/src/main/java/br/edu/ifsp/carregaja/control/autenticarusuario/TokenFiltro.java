@@ -19,7 +19,10 @@ import br.edu.ifsp.carregaja.model.compartilhado.Usuario;
 import br.edu.ifsp.carregaja.repository.compartilhado.UsuarioRepository;
 import br.edu.ifsp.carregaja.service.autenticarusuario.TokenService;
 
-/** Busca o usuário no banco a cada requisição, assim quem é desativado perde o acesso na hora (HU-09, teste 04). */
+/**
+ * Busca o usuário no banco a cada requisição, assim quem é desativado perde o acesso na hora (HU-09, teste 04), e
+ * o token emitido antes de uma troca de senha deixa de valer (Roteiro de Teste, UC01 cenário 08).
+ */
 public class TokenFiltro extends OncePerRequestFilter {
 
   private static final String PREFIXO = "Bearer ";
@@ -37,9 +40,11 @@ public class TokenFiltro extends OncePerRequestFilter {
       throws ServletException, IOException {
     String cabecalho = requisicao.getHeader(HttpHeaders.AUTHORIZATION);
     if (cabecalho != null && cabecalho.startsWith(PREFIXO)) {
-      tokenService.lerUsuarioId(cabecalho.substring(PREFIXO.length()))
+      String token = cabecalho.substring(PREFIXO.length());
+      tokenService.lerUsuarioId(token)
           .flatMap(usuarioRepository::findById)
           .filter(Usuario::isAtivo)
+          .filter(usuario -> tokenService.emitidoDepoisDaTrocaDeSenha(token, usuario))
           .ifPresent(this::autenticar);
     }
     cadeia.doFilter(requisicao, resposta);

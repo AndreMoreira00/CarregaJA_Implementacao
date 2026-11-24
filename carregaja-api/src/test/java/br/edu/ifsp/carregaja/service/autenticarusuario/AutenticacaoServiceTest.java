@@ -2,6 +2,7 @@ package br.edu.ifsp.carregaja.service.autenticarusuario;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -126,12 +127,38 @@ class AutenticacaoServiceTest {
     verify(usuarioRepository).save(usuario);
   }
 
+  // Roteiro de Teste, UC01 cenário 08
+  @Test
+  void trocarSenhaInvalidaOTokenAntigoEOLoginNovoVale() throws InterruptedException {
+    String antigo = tokenService.gerar(usuario);
+    Thread.sleep(1100);   // o token marca a emissão em segundos inteiros
+
+    service.trocarSenha(usuario, troca("senha-valida", "senha-nova-1"));
+    String novo = service.autenticar(login("apto42@carregaja.test", "senha-nova-1")).getToken();
+
+    assertFalse(tokenService.emitidoDepoisDaTrocaDeSenha(antigo, usuario));
+    assertTrue(tokenService.emitidoDepoisDaTrocaDeSenha(novo, usuario));
+  }
+
+  @Test
+  void quemNuncaTrocouASenhaTemOTokenValido() {
+    assertTrue(tokenService.emitidoDepoisDaTrocaDeSenha(tokenService.gerar(usuario), usuario));
+  }
+
+  @Test
+  void tokenInvalidoNaoValeMesmoComTrocaDeSenha() {
+    usuario.marcarTrocaDeSenha();
+
+    assertFalse(tokenService.emitidoDepoisDaTrocaDeSenha("token-invalido", usuario));
+  }
+
   // HU-01, teste 07
   @Test
   void senhaAtualIncorretaNaoTroca() {
     assertThrows(RegraNegocioException.class, () -> service.trocarSenha(usuario, troca("errada", "senha-nova-1")));
 
     assertTrue(usuario.isTrocarSenha());
+    assertNull(usuario.getSenhaTrocadaEm());
     verify(usuarioRepository, never()).save(any());
   }
 
